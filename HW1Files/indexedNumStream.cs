@@ -67,7 +67,6 @@ namespace CS422
 		public override long Seek(long offset, SeekOrigin origin)
 		{
 			throw new NotImplementedException ();
-			return 0;
 		}
 
 		public override void SetLength (long value)
