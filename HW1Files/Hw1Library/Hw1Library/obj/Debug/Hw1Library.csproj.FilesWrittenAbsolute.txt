@@ -1,0 +1,10 @@
+/home/conner/Documents/422/HW1/Hw1Library/Hw1Library/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/conner/Documents/422/HW1/Hw1Library/Hw1Library/bin/Debug/Hw1Library.dll.mdb
+/home/conner/Documents/422/HW1/Hw1Library/Hw1Library/bin/Debug/Hw1Library.dll
+/home/conner/Documents/422/HW1/Hw1Library/Hw1Library/obj/Debug/Hw1Library.dll
+/home/conner/Documents/422/HW1/Hw1Library/Hw1Library/obj/Debug/Hw1Library.dll.mdb
+/home/conner/Documents/422/Hw1Library/Hw1Library/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/conner/Documents/422/Hw1Library/Hw1Library/bin/Debug/Hw1Library.dll.mdb
+/home/conner/Documents/422/Hw1Library/Hw1Library/bin/Debug/Hw1Library.dll
+/home/conner/Documents/422/Hw1Library/Hw1Library/obj/Debug/Hw1Library.dll
+/home/conner/Documents/422/Hw1Library/Hw1Library/obj/Debug/Hw1Library.dll.mdb
