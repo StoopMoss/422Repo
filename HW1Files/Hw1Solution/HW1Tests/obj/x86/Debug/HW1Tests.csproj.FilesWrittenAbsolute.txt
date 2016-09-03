@@ -1,0 +1,8 @@
+/home/conner/Documents/422/422Repo/HW1Files/Hw1Solution/HW1Tests/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/conner/Documents/422/422Repo/HW1Files/Hw1Solution/HW1Tests/bin/Debug/nunit.framework.dll
+/home/conner/Documents/422/422Repo/HW1Files/Hw1Solution/HW1Tests/bin/Debug/Hw1Lib.exe
+/home/conner/Documents/422/422Repo/HW1Files/Hw1Solution/HW1Tests/bin/Debug/Hw1Lib.exe.mdb
+/home/conner/Documents/422/422Repo/HW1Files/Hw1Solution/HW1Tests/bin/Debug/HW1Tests.exe.mdb
+/home/conner/Documents/422/422Repo/HW1Files/Hw1Solution/HW1Tests/bin/Debug/HW1Tests.exe
+/home/conner/Documents/422/422Repo/HW1Files/Hw1Solution/HW1Tests/obj/x86/Debug/HW1Tests.exe
+/home/conner/Documents/422/422Repo/HW1Files/Hw1Solution/HW1Tests/obj/x86/Debug/HW1Tests.exe.mdb

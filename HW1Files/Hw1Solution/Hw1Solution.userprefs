@@ -1,0 +1,16 @@
+﻿<Properties StartupItem="Hw1Lib/Hw1Lib.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="HW1Tests/TestClass.cs">
+    <Files>
+      <File FileName="HW1Tests/TestClass.cs" Line="23" Column="3" />
+      <File FileName="HW1Tests/EmptyCSharpFile.cs" Line="12" Column="6" />
+      <File FileName="Hw1Lib/Properties/numberedTextWriter.cs" Line="16" Column="3" NotebookId="1" />
+      <File FileName="Hw1Lib/Properties/Program.cs" Line="13" Column="1" NotebookId="1" />
+      <File FileName="Hw1Lib/Properties/indexedStream.cs" Line="117" Column="1" NotebookId="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hw1Lib", "Hw1Lib\Hw1Lib.csproj", "{F8F9B219-B1A8-43C0-8E78-B1B2FF7DAF48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HW1Tests", "HW1Tests\HW1Tests.csproj", "{8B460C7F-3449-4305-8319-AB36E821EEB9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8B460C7F-3449-4305-8319-AB36E821EEB9}.Debug|x86.ActiveCfg = Debug|x86
+		{8B460C7F-3449-4305-8319-AB36E821EEB9}.Debug|x86.Build.0 = Debug|x86
+		{8B460C7F-3449-4305-8319-AB36E821EEB9}.Release|x86.ActiveCfg = Release|x86
+		{8B460C7F-3449-4305-8319-AB36E821EEB9}.Release|x86.Build.0 = Release|x86
+		{F8F9B219-B1A8-43C0-8E78-B1B2FF7DAF48}.Debug|x86.ActiveCfg = Debug|x86
+		{F8F9B219-B1A8-43C0-8E78-B1B2FF7DAF48}.Debug|x86.Build.0 = Debug|x86
+		{F8F9B219-B1A8-43C0-8E78-B1B2FF7DAF48}.Release|x86.ActiveCfg = Release|x86
+		{F8F9B219-B1A8-43C0-8E78-B1B2FF7DAF48}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+EndGlobal
