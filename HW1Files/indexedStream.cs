@@ -8,9 +8,6 @@ namespace CS422
 		private long _position;
 		private long _length;
 
-		private bool _canRead;
-		private bool _canWrite;
-
 		//Properties
 		public override long Position
 		{
@@ -35,10 +32,10 @@ namespace CS422
 			}
 		}
 
-		public override bool CanSeek{ get;}
-		public override bool CanRead{ get;}
-		public override bool CanWrite{ get;}
-		public override long Length{ get; }
+		public override bool CanSeek{ get{ return true;}}
+		public override bool CanRead{ get{ return true;}}
+		public override bool CanWrite{ get{ return false;}}
+		public override long Length{ get { return _length;} }
 
 		//Constructor(s)
 		public IndexedNumsStream()
@@ -71,7 +68,11 @@ namespace CS422
 
 		public override void SetLength (long value)
 		{
-			throw new NotImplementedException ();
+			if (value < 0) {
+				_length = 0;					
+			} else {
+				_length = value;
+			}
 		}
 
 		public override void Write(byte[] byteArray, int offset, int count)
@@ -81,36 +82,34 @@ namespace CS422
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
+			int bytes_read = 0;
+			long position_marker = 0;;
 			// Check Bounds
 			if (offset < 0) {
 				Console.WriteLine ("Stream Read Error: offset must be positive");
 				Console.WriteLine ();
 				return -1;
 			}
-			else if (offset > _length) {
-				Console.WriteLine ("Stream Read Error: offset must be less than the length of the stream");
-				Console.WriteLine ("Length is " + _length.ToString());
-				Console.WriteLine ();
-				return -1;
-			}
 
-			Position = offset;
-			Console.WriteLine ("Reading stream...");
+			position_marker = Position;
+			//Console.WriteLine ("Reading stream...");
+
 			for (int i = 0; i < count; i++)
 			{				
-				if (offset > _length)
+				if (position_marker > _length)
 				{
-					Console.WriteLine ("End of stream: Postion " + Position.ToString());
+					Console.WriteLine ("End of stream: PostionMarker " + position_marker.ToString());
 					Console.WriteLine ();
-					return -1;
+					return bytes_read;
 				}
 				buffer [i] = (byte)(Position % 256);
-				Console.WriteLine (buffer[i].ToString());
+				//Console.WriteLine (buffer[i].ToString());
 				Position++;
-				offset++;
+				position_marker++;
+				bytes_read++;
 			}
-			Console.WriteLine ();
-			return 0;
+			//Console.WriteLine ();
+			return bytes_read;
 		}
 	}
 }

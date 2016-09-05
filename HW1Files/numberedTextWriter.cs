@@ -8,6 +8,16 @@ namespace CS422
 		private int _currentLineNumber;
 		private TextWriter _writer;
 
+		public int CurrentLine
+		{
+			get { return _currentLineNumber;}
+		}
+
+		public TextWriter Writer
+		{
+			get { return _writer;}
+		}
+
 		public override  System.Text.Encoding Encoding
 		{
 			get{ return _writer.Encoding; }           
@@ -30,7 +40,7 @@ namespace CS422
 		//Methods
 		public override void WriteLine(string _string)
 		{
-			
+
 			string s;
 			// Add current line number to start of string
 			s = _currentLineNumber.ToString() + ": " + _string;

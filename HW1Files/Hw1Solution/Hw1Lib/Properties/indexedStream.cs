@@ -8,9 +8,6 @@ namespace CS422
 		private long _position;
 		private long _length;
 
-		private bool _canRead;
-		private bool _canWrite;
-
 		//Properties
 		public override long Position
 		{
@@ -71,7 +68,11 @@ namespace CS422
 
 		public override void SetLength (long value)
 		{
-			throw new NotImplementedException ();
+			if (value < 0) {
+				_length = 0;					
+			} else {
+				_length = value;
+			}
 		}
 
 		public override void Write(byte[] byteArray, int offset, int count)
@@ -81,7 +82,7 @@ namespace CS422
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			long bytes_read = 0;
+			int bytes_read = 0;
 			long position_marker = 0;;
 			// Check Bounds
 			if (offset < 0) {
@@ -91,7 +92,7 @@ namespace CS422
 			}
 
 			position_marker = Position;
-			Console.WriteLine ("Reading stream...");
+			//Console.WriteLine ("Reading stream...");
 
 			for (int i = 0; i < count; i++)
 			{				
@@ -99,16 +100,16 @@ namespace CS422
 				{
 					Console.WriteLine ("End of stream: PostionMarker " + position_marker.ToString());
 					Console.WriteLine ();
-					return -1;
+					return bytes_read;
 				}
 				buffer [i] = (byte)(Position % 256);
-				Console.WriteLine (buffer[i].ToString());
+				//Console.WriteLine (buffer[i].ToString());
 				Position++;
 				position_marker++;
 				bytes_read++;
 			}
-			Console.WriteLine ();
-			return 0;
+			//Console.WriteLine ();
+			return bytes_read;
 		}
 	}
 }
