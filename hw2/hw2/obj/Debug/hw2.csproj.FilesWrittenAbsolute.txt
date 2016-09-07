@@ -1,0 +1,5 @@
+/home/conner/Documents/422/422Repo/hw2/hw2/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/conner/Documents/422/422Repo/hw2/hw2/bin/Debug/hw2.dll.mdb
+/home/conner/Documents/422/422Repo/hw2/hw2/bin/Debug/hw2.dll
+/home/conner/Documents/422/422Repo/hw2/hw2/obj/Debug/hw2.dll
+/home/conner/Documents/422/422Repo/hw2/hw2/obj/Debug/hw2.dll.mdb

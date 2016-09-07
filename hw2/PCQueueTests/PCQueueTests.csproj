@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BFE2B4A6-D34D-43C0-B099-E490FCD394C7}</ProjectGuid>
+    <ProjectGuid>{5976659D-B7E8-488A-88D9-73E384F0B7B3}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>hw2</RootNamespace>
-    <AssemblyName>hw2</AssemblyName>
+    <RootNamespace>PCQueueTests</RootNamespace>
+    <AssemblyName>PCQueueTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -29,11 +29,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PCQueue.cs" />
-    <Compile Include="ThreadPoolSleepSorter.cs" />
+    <Compile Include="Test.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\hw2\hw2.csproj">
+      <Project>{BFE2B4A6-D34D-43C0-B099-E490FCD394C7}</Project>
+      <Name>hw2</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

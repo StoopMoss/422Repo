@@ -1,1 +1,29 @@
-﻿<Properties StartupItem="hw2/hw2.csproj" />
+﻿<Properties StartupItem="hw2/hw2.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="hw2/ThreadPoolSleepSorter.cs">
+    <Files>
+      <File FileName="hw2/PCQueue.cs" Line="46" Column="4" />
+      <File FileName="PCQueueTests/Test.cs" Line="57" Column="18" NotebookId="1" />
+      <File FileName="hw2/ThreadPoolSleepSorter.cs" Line="27" Column="35" NotebookId="1" />
+    </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.NUnit.TestPad">
+        <State name="__root__">
+          <Node name="hw2" expanded="True">
+            <Node name="PCQueueTests" expanded="True">
+              <Node name="PCQueueTests" expanded="True">
+                <Node name="Test" expanded="True">
+                  <Node name="FillThenEmptyQueue" selected="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

@@ -1,0 +1,8 @@
+/home/conner/Documents/422/422Repo/hw2/PCQueueTests/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/conner/Documents/422/422Repo/hw2/PCQueueTests/bin/Debug/PCQueueTests.dll.mdb
+/home/conner/Documents/422/422Repo/hw2/PCQueueTests/bin/Debug/PCQueueTests.dll
+/home/conner/Documents/422/422Repo/hw2/PCQueueTests/obj/Debug/PCQueueTests.dll
+/home/conner/Documents/422/422Repo/hw2/PCQueueTests/obj/Debug/PCQueueTests.dll.mdb
+/home/conner/Documents/422/422Repo/hw2/PCQueueTests/bin/Debug/nunit.framework.dll
+/home/conner/Documents/422/422Repo/hw2/PCQueueTests/bin/Debug/hw2.dll
+/home/conner/Documents/422/422Repo/hw2/PCQueueTests/bin/Debug/hw2.dll.mdb
