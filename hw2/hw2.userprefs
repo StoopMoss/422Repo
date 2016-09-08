@@ -3,8 +3,8 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="hw2/ThreadPoolSleepSorter.cs">
     <Files>
       <File FileName="hw2/PCQueue.cs" Line="46" Column="4" />
-      <File FileName="PCQueueTests/Test.cs" Line="57" Column="18" NotebookId="1" />
-      <File FileName="hw2/ThreadPoolSleepSorter.cs" Line="27" Column="35" NotebookId="1" />
+      <File FileName="PCQueueTests/Test.cs" Line="57" Column="18" />
+      <File FileName="hw2/ThreadPoolSleepSorter.cs" Line="42" Column="3" NotebookId="1" />
     </Files>
     <Pads>
       <Pad Id="MonoDevelop.NUnit.TestPad">
