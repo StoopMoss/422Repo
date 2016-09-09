@@ -1,4 +1,4 @@
-﻿<Properties StartupItem="hw2/hw2.csproj">
+﻿<Properties StartupItem="demo/demo.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="hw2/ThreadPoolSleepSorter.cs">
     <Files>

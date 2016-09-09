@@ -34,6 +34,7 @@ namespace CS422
 				//_end = _list;
 			}else if (_end == null)
 			{
+				// theres one item
 				_end = new Node (dataValue, null);
 				_list.Next = _end;
 			}
