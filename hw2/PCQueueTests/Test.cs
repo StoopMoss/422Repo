@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+﻿
 using System;
 using CS422;
 using System.Threading;
@@ -58,25 +58,38 @@ namespace PCQueueTests
 		}
 
 		[Test]
-		public void threadsafeDequeue()
+		public void ThreadSafeQueue()
 		{
 			//Arrange
-			//Thread thread1 = new Thread(_queue.Dequeue());
-			//Thread thread2 = new Thread(_queue.Dequeue());
-			for(int i = 0; i < 1000; i++)
-			{
-				_queue.Enqueue (i);
-			}
+			Thread thread1 = new Thread(() => DequeueHelper());
+			Thread thread2 = new Thread(()=> EnqueueHelper());
 
 			//Act
-			for(int i = 0; i < 500; i++)
-			{
-			//	thread1.Start();
-			//	thread2.Start();
-			}
+			thread1.Start();
+			thread2.Start();
 
 			//Assert
+			Assert.IsFalse (_queue.Dequeue);
+
 		}
+		public bool DequeueHelper()
+		{
+			int outvalue = 0;
+			for (int i = 0; i < 500; i++) 
+			{
+				_queue.Dequeue (ref outvalue);
+			}
+			return true;
+		}
+		public bool EnqueueHelper()
+		{
+			for (int i = 0; i < 500; i++) 
+			{
+				_queue.Enqueue (1);
+			}
+			return true;
+		}
+
 	}
 }
 

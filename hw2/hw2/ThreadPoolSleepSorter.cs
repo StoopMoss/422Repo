@@ -27,10 +27,10 @@ namespace CS422
 			{_threadCount = threadCount;}
 
 			// Create and start all threads
-			_readyThreadPool = new Thread[10000];
+			_readyThreadPool = new Thread[_threadCount];
 			for (int i = 0; i < _threadCount; i++)
 			{
-				_readyThreadPool [i] = new Thread(() => ThreadWorkFunc(_collection));
+				_readyThreadPool [i] = new Thread(() => ThreadWorkFunc());
 				_readyThreadPool [i].Start ();
 			}
 
@@ -45,14 +45,13 @@ namespace CS422
 			}			
 		}
 
-
 		// ThreadWorkFunc (performs sleeping and displaying of values)
-		void ThreadWorkFunc(BlockingCollection<byte> coll) 
+		void ThreadWorkFunc() 
 		{
 			byte value = 0;
 			while (true) {
-				value = coll.Take ();
-				Thread.Sleep (value);
+				value = _collection.Take ();
+				Thread.Sleep (value*1000);
 				_textWriter.WriteLine (value);
 			}
 		}
