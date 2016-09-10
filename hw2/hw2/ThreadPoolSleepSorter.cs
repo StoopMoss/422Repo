@@ -30,17 +30,22 @@ namespace CS422
 			_readyThreadPool = new Thread[_threadCount];
 			for (int i = 0; i < _threadCount; i++)
 			{
-				_readyThreadPool [i] = new Thread(() => ThreadWorkFunc());
+				//_readyThreadPool [i] = new Thread(() => ThreadWorkFunc());
+				_readyThreadPool [i] = new Thread (new ThreadStart (ThreadWorkFunc));
 				_readyThreadPool [i].Start ();
 			}
 		}
 
 		public void Sort(byte[] values)
 		{
-			for (int i = 0; i < values.Length; i++)
+			foreach (byte b in values)
 			{
+//				if (_disposeThreads) 
+//				{
+//					return;
+//				}
 				//awaken thread
-				_collection.Add(values[i]);
+				_collection.Add(b);
 			}			
 		}
 
@@ -61,9 +66,9 @@ namespace CS422
 		}
 
 		public void Dispose()
-		{			
+		{	
+			_collection.Add (1);
 			_disposeThreads = true;
-			Dispose();
 			GC.SuppressFinalize(this);
 		}
 	}

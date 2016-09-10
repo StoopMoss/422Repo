@@ -10,9 +10,23 @@ namespace demo
 
 		public static void Main (string[] args)
 		{
+			int outvalue = 0;
 			Console.WriteLine ("QueueTests");
 
 			queue = new PCQueue ();
+
+			for (int i = 0; i < 20; i++)
+			{
+				queue.Enqueue (i);
+			}
+
+			queue.printList ();
+
+			for (int i = 0; i < 20; i++)
+			{
+				queue.Dequeue (ref outvalue);
+			}
+
 			Thread t1 = new Thread (() => Dtest());
 			Thread t2 = new Thread (() => Etest());
 
@@ -23,6 +37,7 @@ namespace demo
 			ThreadPoolSleepSorter sorter = new ThreadPoolSleepSorter (Console.Out, 10);
 			byte[] values = { 1, 7, 8, 2, 3, 4, 5, 6, 9, 10 };
 			sorter.Sort (values);
+			sorter.Dispose();
 
 			Console.WriteLine("done");
 		}

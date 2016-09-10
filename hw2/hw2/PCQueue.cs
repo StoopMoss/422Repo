@@ -34,46 +34,23 @@ namespace CS422
 			return true;
 		}
 
-//		public bool Dequeue(ref int out_value)
-//		{			
-//			if (_list == null) 
-//			{
-//				return false;
-//			}
-//
-//			// There is a node
-//			out_value = _list.Value;
-//			_list = _list.Next;
-//			return true;
-//		}
-//
 		public void Enqueue(int dataValue)
 		{
 			_end.Next = new Node (dataValue);
 			_end = _end.Next;
 		}
 
-//		public void Enqueue(int dataValue)
-//		{			
-//			if (_list == null) 
-//			{				
-//				// no nodes yet
-//				_list = new Node (dataValue, null);
-//				//_end = _list;
-//			}else if (_end == null)
-//			{
-//				// theres one item
-//				_end = new Node (dataValue, null);
-//				_list.Next = _end;
-//			}
-//			else 
-//			{
-//				// nodes exsit
-//				_end.Next = new Node (dataValue, null);
-//				_end = _end.Next;
-//			}
-//		}
-//	}
+		public void printList()
+		{
+			Node current = _list;
+			while (current.Next != null)
+			{
+				Console.WriteLine (current.Value + "->");
+				current = current.Next;
+			}
+			Console.WriteLine (current.Value);
+		}
+
 
 	internal class Node
 	{	
