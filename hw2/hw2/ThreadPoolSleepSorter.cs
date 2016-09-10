@@ -11,7 +11,7 @@ namespace CS422
 		private BlockingCollection<byte> _collection;
 		private ushort _threadCount;
 		private Thread[] _readyThreadPool;
-
+		private bool _disposeThreads;
 
 		public ThreadPoolSleepSorter ()
 		{}
@@ -33,7 +33,6 @@ namespace CS422
 				_readyThreadPool [i] = new Thread(() => ThreadWorkFunc());
 				_readyThreadPool [i].Start ();
 			}
-
 		}
 
 		public void Sort(byte[] values)
@@ -49,15 +48,21 @@ namespace CS422
 		void ThreadWorkFunc() 
 		{
 			byte value = 0;
-			while (true) {
+			while (true) 
+			{
 				value = _collection.Take ();
+
+				if (_disposeThreads)
+				{ break; }
+
 				Thread.Sleep (value*1000);
 				_textWriter.WriteLine (value);
 			}
 		}
 
 		public void Dispose()
-		{				
+		{			
+			_disposeThreads = true;
 			Dispose();
 			GC.SuppressFinalize(this);
 		}
