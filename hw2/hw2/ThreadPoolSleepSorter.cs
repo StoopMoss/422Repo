@@ -30,7 +30,6 @@ namespace CS422
 			_readyThreadPool = new Thread[_threadCount];
 			for (int i = 0; i < _threadCount; i++)
 			{
-				//_readyThreadPool [i] = new Thread(() => ThreadWorkFunc());
 				_readyThreadPool [i] = new Thread (new ThreadStart (ThreadWorkFunc));
 				_readyThreadPool [i].Start ();
 			}
@@ -40,10 +39,6 @@ namespace CS422
 		{
 			foreach (byte b in values)
 			{
-//				if (_disposeThreads) 
-//				{
-//					return;
-//				}
 				//awaken thread
 				_collection.Add(b);
 			}			
