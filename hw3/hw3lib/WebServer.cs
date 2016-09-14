@@ -51,16 +51,19 @@ namespace CS422
 		{
 			byte[] buffer = new byte[4096];
 			int bytesRead = 0;
-			//bool finished;
-			//("blah");
+			int totalBytesRead = 0;
 
-			do 			{
-				if (networkStream.CanRead) 
-				{
-					bytesRead += networkStream.Read (buffer, 0, buffer.Length);
-				}
-			} while (bytesRead != 0);
-
+			if (networkStream.CanRead) 
+			{
+				do {
+					bytesRead = networkStream.Read (buffer, totalBytesRead, buffer.Length - totalBytesRead);
+					totalBytesRead += bytesRead;
+				} while (bytesRead != 0);
+			} 
+			else 
+			{
+				return false;
+			}
 			return true;
 		}
 
@@ -73,13 +76,27 @@ namespace CS422
 
 		public static bool ValidateHTTPRequestLine(byte[] buffer)
 		{
+
+
 			//1. Only allow GET
-
-
 			//2. Allow any valid URI
 			//3. Allow HTTP/1.1
 			// CRLF
 			return true;
+		}
+
+		public static char[] GetRequestLine (byte[] buffer)
+		{
+			char[] requestLine = new char[2048];
+			int i = 0;
+
+			// Read first line of request
+			while (buffer[i] != '\r' && buffer[i+1] != '\n' && i != 2048) 
+			{
+				requestLine [i] = buffer[i];	
+				i++;
+			}
+			return requestLine;
 		}
 
 		public static bool ValidateHTTPHeaders(byte[] buffer)

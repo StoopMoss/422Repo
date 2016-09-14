@@ -17,7 +17,7 @@ namespace hw3LibTests
 		private TcpClient _client;
 		private TcpListener _listener;
 
-		private string _validString = "GET /hello.htm HTTP/1.1\n" +
+		private string _validString = "GET /hello.htm HTTP/1.1\r\n" +
 			"User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n" +
 			"Host: www.tutorialspoint.com\n" +
 			"Accept-Language: en-us\n" +
@@ -136,6 +136,33 @@ namespace hw3LibTests
 			// Assert
 			Assert.False(result);
 		}
+		
+		[Test ()]
+		public void GetHTTPRequestLine()
+		{
+			// Arrange
+			char[] result = new char[2048];
+
+			// Case 1
+			byte[] buffer = _inValidRequestBadVersion;
+			result = WebServer.GetRequestLine(buffer);
+			Assert.AreEqual ("GET /hello.htm HTTP/1.1", result);
+
+			// Case 2
+			buffer = _inValidRequest;
+			result = WebServer.GetRequestLine(buffer);
+
+			// Case 3
+			buffer = _inValidRequestLowerCaseGet;
+			result = WebServer.GetRequestLine(buffer);
+
+			// Case 4
+			buffer = _validRequest;
+			result = WebServer.GetRequestLine(buffer);
+
+			Assert.False(result);
+		}
+
 
 
 	}
