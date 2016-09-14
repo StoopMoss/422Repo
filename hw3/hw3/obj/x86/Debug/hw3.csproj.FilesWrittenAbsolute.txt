@@ -1,0 +1,7 @@
+/home/conner/Documents/422/422Repo/hw3/hw3/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/conner/Documents/422/422Repo/hw3/hw3/bin/Debug/hw3.exe.mdb
+/home/conner/Documents/422/422Repo/hw3/hw3/bin/Debug/hw3.exe
+/home/conner/Documents/422/422Repo/hw3/hw3/obj/x86/Debug/hw3.exe
+/home/conner/Documents/422/422Repo/hw3/hw3/obj/x86/Debug/hw3.exe.mdb
+/home/conner/Documents/422/422Repo/hw3/hw3/bin/Debug/hw3lib.dll
+/home/conner/Documents/422/422Repo/hw3/hw3/bin/Debug/hw3lib.dll.mdb

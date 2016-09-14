@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hw3", "hw3\hw3.csproj", "{157E8DCE-42C2-4555-B4CD-09F059FAF576}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hw3lib", "hw3lib\hw3lib.csproj", "{E5B29479-5EBD-4AA2-98E9-2503364473C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hw3LibTests", "hw3LibTests\hw3LibTests.csproj", "{F959FFCC-8A53-4410-96A4-839BB7F59809}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{157E8DCE-42C2-4555-B4CD-09F059FAF576}.Debug|x86.ActiveCfg = Debug|x86
+		{157E8DCE-42C2-4555-B4CD-09F059FAF576}.Debug|x86.Build.0 = Debug|x86
+		{157E8DCE-42C2-4555-B4CD-09F059FAF576}.Release|x86.ActiveCfg = Release|x86
+		{157E8DCE-42C2-4555-B4CD-09F059FAF576}.Release|x86.Build.0 = Release|x86
+		{E5B29479-5EBD-4AA2-98E9-2503364473C4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E5B29479-5EBD-4AA2-98E9-2503364473C4}.Debug|x86.Build.0 = Debug|Any CPU
+		{E5B29479-5EBD-4AA2-98E9-2503364473C4}.Release|x86.ActiveCfg = Release|Any CPU
+		{E5B29479-5EBD-4AA2-98E9-2503364473C4}.Release|x86.Build.0 = Release|Any CPU
+		{F959FFCC-8A53-4410-96A4-839BB7F59809}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F959FFCC-8A53-4410-96A4-839BB7F59809}.Debug|x86.Build.0 = Debug|Any CPU
+		{F959FFCC-8A53-4410-96A4-839BB7F59809}.Release|x86.ActiveCfg = Release|Any CPU
+		{F959FFCC-8A53-4410-96A4-839BB7F59809}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
