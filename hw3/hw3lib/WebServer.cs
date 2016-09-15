@@ -27,9 +27,9 @@ namespace CS422
 				NetworkStream networkStream = client.GetStream();
 
 				//read and validate what was read (TODO: exstract method(s))
-				ReadFromNetworkStream(networkStream);
-				//active = validateRequest (buffer);
-//
+				ReadFromNetworkStream(networkStream, ref buffer);
+				active = ValidateRequest (buffer);
+
 //				if (active)
 //				{
 //					WriteResponseToClient (responseTemplate);
@@ -47,7 +47,7 @@ namespace CS422
 			return true;			
 		}
 
-		public static bool ReadFromNetworkStream(NetworkStream networkStream)
+		public static bool ReadFromNetworkStream(NetworkStream networkStream, ref byte[] buf)
 		{
 			byte[] buffer = new byte[4096];
 			int bytesRead = 0;
@@ -56,6 +56,7 @@ namespace CS422
 			if (networkStream.CanRead) 
 			{
 				do {
+					// read from stream until buffer is full or Read() returns 0
 					bytesRead = networkStream.Read (buffer, totalBytesRead, buffer.Length - totalBytesRead);
 					totalBytesRead += bytesRead;
 				} while (bytesRead != 0);
@@ -69,23 +70,75 @@ namespace CS422
 
 		public static bool ValidateRequest (byte[] buffer)
 		{			
-			ValidateHTTPRequestLine(buffer);
-			ValidateHTTPHeaders (buffer);
-			return true;
+			if (ValidateHTTPRequestLine (buffer))
+			{
+				if (ValidateHTTPHeaders (buffer)) 
+				{
+					return true;
+				}
+			} 
+			return false;			
 		}
 
 		public static bool ValidateHTTPRequestLine(byte[] buffer)
-		{
-
+		{			
+			// get first line of request (The request line)
+			string requestLine = GetRequestLine(buffer);
+			string versionSubstring;
 
 			//1. Only allow GET
+			// Check HTTP Method for "GET " at start of string
+			if (requestLine.Length > 4)
+			{
+				string actual = requestLine.Substring (0, 4);
+
+				if (actual != "GET ")
+				{
+					return false;
+				}
+			}
+
 			//2. Allow any valid URI
+			//TODO: what to do about URI's
+
 			//3. Allow HTTP/1.1
+			// Traverse over two whitespaces then validate substring
+			int i = 0;
+			int whiteSpaceToSkip = 2;
+			while(requestLine[i] != '\r' && requestLine[i+1] != '\n' && i < requestLine.Length)
+			{
+				if (0 == whiteSpaceToSkip)
+				{
+					versionSubstring = requestLine.Substring (i);
+					break;
+				}
+				else if(' ' == requestLine[i])
+				{
+					whiteSpaceToSkip--;
+				}
+
+				i++;
+			}
+
+			// validate version
+			// TODO: make more robust i.e. garbage after version, how are line ends compared?
+			if (versionSubstring != "HTTP/1.1")
+			{
+				return false;
+			}
+
 			// CRLF
+			//TODO: make sure request line ends correctly
+//			string ending = requestLine.Substring(requestLine.Length - 2);
+//			if (ending != "\r\n")
+//			{
+//				return false;
+//			}
+
 			return true;
 		}
 
-		public static char[] GetRequestLine (byte[] buffer)
+		public static string GetRequestLine (byte[] buffer)
 		{
 			char[] requestLine = new char[2048];
 			int i = 0;
@@ -93,10 +146,10 @@ namespace CS422
 			// Read first line of request
 			while (buffer[i] != '\r' && buffer[i+1] != '\n' && i != 2048) 
 			{
-				requestLine [i] = buffer[i];	
+				requestLine [i] = (char)buffer[i];	
 				i++;
 			}
-			return requestLine;
+			return new string (requestLine);
 		}
 
 		public static bool ValidateHTTPHeaders(byte[] buffer)
