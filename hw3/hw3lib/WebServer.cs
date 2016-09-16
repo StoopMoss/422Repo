@@ -18,6 +18,7 @@ namespace CS422
 		private static bool _fullVersion;
 		private static bool _fullURI;
 		private static bool _fullHeaders;
+		private static bool _fullRequest;
 
 		public WebServer ()
 		{}
@@ -34,7 +35,7 @@ namespace CS422
 			_fullVersion = false;
 			_fullURI = false;
 			_fullHeaders = false;
-
+			_fullRequest = false;
 
 			// Set TCP 
 			TcpClient client = new TcpClient();
@@ -45,12 +46,10 @@ namespace CS422
 			while (active) 
 			{
 				// blocking call to accept client
-				Console.WriteLine("in active while");
 				client = listener.AcceptTcpClient();
 				NetworkStream networkStream = client.GetStream();
 
 				// read and validate what was read
-				Console.WriteLine("about to read");
 				active = ReadFromNetworkStream(networkStream);
 
 				if (active)
@@ -80,7 +79,6 @@ namespace CS422
 		{
 			byte[] buffer = new byte[4096];
 			int bytesRead = 0, totalBytesRead = 0;
-			string requestReadSoFar;
 			bool validRequest = false;
 
 			Console.WriteLine("in Read");
@@ -89,38 +87,47 @@ namespace CS422
 				do {
 					// read from stream until buffer is full or Read() returns 0
 					bytesRead = networkStream.Read (buffer, totalBytesRead, buffer.Length - totalBytesRead);
-					totalBytesRead += bytesRead;
-					validRequest = ValidateRequest(buffer, totalBytesRead);
+					if (bytesRead == 0)
+					{
+						break;
+					}
+					Console.WriteLine("Read " + bytesRead.ToString() + "bytes");
+					validRequest = ValidateRequest(buffer);
 
-					//check to see if double return has been reached
-					if (validRequest)
+					// If valid and full no more reading is required
+					// If not full then request has not been read fully
+					if ( _fullRequest && validRequest)
 					{
 						// stop reading and send back a response
 						return true;
 					}
 
-				} while (bytesRead != 0);
+
+				} while (validRequest);
 			}
 			return false;
 		}
 
-		public static bool ValidateRequest(byte[] buffer, int bytesRead)
+		public static bool ValidateRequest(byte[] buffer)
 		{	
 			if (!_fullMethod)
 			{
 				// Check method for "GET "
+				Console.WriteLine("Validate: Check Method");
 				if (!ValidateRequestMethod(buffer))
 				{ return false; }
 			}
-			else if (!_fullURI)
+			if (!_fullURI && _fullMethod)
 			{
 				//check uri
+				Console.WriteLine("Validate: Check URI");
 				if (!ValidateRequestURI (buffer)) 
 				{ return false;	}
 			}
-			else if (!_fullVersion)
+			if (!_fullVersion && _fullURI && _fullMethod)
 			{
 				// Check  for “HTTP/1.1”
+				Console.WriteLine("Validate: Check Version");
 				if(!ValidateRequestVersion(buffer) )
 				{ return false; }
 
@@ -130,22 +137,31 @@ namespace CS422
 					_validRequestLine = true;
 				}
 			}
-			//TODO: Header validation
-			else if (!_fullHeaders)
+			if (!_fullHeaders && _fullVersion && _fullURI && _fullMethod)
 			{
+				Console.WriteLine("Validate: Check Headers");
 				if( !ValidateRequestHeaders(buffer) )
 				{ return false; }											
 			}
+
+			//TODO: do i need full headers?
+			if (_fullMethod && _fullURI && _fullVersion && _fullHeaders)
+			{
+				_fullRequest = true;
+			}
+
 			return true;
 		}
 
 
 		//accounts for space  "GET "
 		public static bool ValidateRequestMethod (byte[] buffer)
-		{
-			string requestSoFar = buffer.ToString();
-			string expectedString = "Get ";
+		{			
+			string requestSoFar = Encoding.ASCII.GetString(buffer);
+			string expectedString = "GET ";
 			int bytesToCheck = 4;
+
+			Console.WriteLine("Validating request Method");
 
 			if (requestSoFar.Length == 0)
 			{
@@ -176,8 +192,9 @@ namespace CS422
 			// account for space "URI/ "
 			// assume everything before is correct "GET "
 			// Set _URL to be used later
+			Console.WriteLine("Validating request URI");
 
-			string requestSoFar = buffer.ToString ();
+			string requestSoFar = Encoding.ASCII.GetString(buffer);
 			int i = 0;
 			int whitespaces = 0;
 
@@ -204,10 +221,11 @@ namespace CS422
 		// Must account for newline
 		public static bool ValidateRequestVersion (byte[] buffer)
 		{			
-			string requestSoFar = buffer.ToString();
+			string requestSoFar = Encoding.ASCII.GetString(buffer);
 			string versionSubstring;
 			int i = 0;
 			int whiteSpaceToSkip = 2;
+			Console.WriteLine("Validating request Version");
 
 			while(requestSoFar[i] != '\r' && requestSoFar[i+1] != '\n' && i < requestSoFar.Length)
 			{
@@ -235,27 +253,40 @@ namespace CS422
 		public static bool ValidateRequestHeaders(byte[] buffer)
 		{
 			// Get the headers as a string
-			string headerString = buffer.ToString();
+			Console.WriteLine("Validating request headers");
+			string headerString = Encoding.ASCII.GetString(buffer);
+			Console.WriteLine();
+			//Console.WriteLine("string: " + headerString.ToString());
 			int startOfHeadersIndex = GetStartOfHeaderBufferIndex (buffer);
+			Console.WriteLine("Index: " + startOfHeadersIndex.ToString());
+
 			if(startOfHeadersIndex == 0)
 			{
 				// Error: shouldn't be in this function if 0 is returned from getIndex
 				return false;
 			}
-			headerString = headerString.Substring (startOfHeadersIndex);
 
-			int i = 0;
+			//headerString = headerString.Substring (startOfHeadersIndex);
+			//Console.WriteLine();
+			//Console.WriteLine("HeaderSection: " + headerString);
+			//Console.WriteLine(headerString.Length.ToString());
+
+			int i = startOfHeadersIndex;
 			bool firstCharacter = true, hitColon = false;
-			while (i < headerString.Length && !_fullHeaders) 
+
+			Console.WriteLine("About to enter loooop");
+			while (i < headerString.Length && !_fullHeaders ) 
 			{
+				Console.WriteLine("Next Header Line");
 				// inner loop is for one header line
-				while (headerString [i] != '\r') 
-				{
+				while (headerString [i] != '\r' && i < headerString.Length) 
+				{				
+					Console.WriteLine("Char[" + i.ToString() + "]: " + headerString[i]);
 					// check each header...
 					if (firstCharacter) 
 					{
 						if (!char.IsLetter (headerString [i])) 
-						{
+						{							
 							return false;
 						} 
 						else 
@@ -278,36 +309,52 @@ namespace CS422
 					i++;
 				}
 
+				//Check for a valid line end
+				if(headerString [i+1] != '\n')
+				{
+					// hit an \r but not a \n
+					return false;
+				}
+
 				if (!hitColon) {
 					//Invalid: finished line and no colon was encountered
 					return false;
 				}
 
-				string endOfString = headerString.Substring (i, 4);
-				if (endOfString.Equals ("\r\n\r\n")) {
+				// check for double return
+				if (headerString[i] == '\r' && headerString[i+2] == '\r')
+				{
 					// Account for double Newline
 					_fullHeaders = true;
+					return true;
 				}
 
-				// skip '\r\n'
-				i += 2;
+				// Reset flags for next line
+				hitColon = false;
+				firstCharacter = true;
+
+				i ++;
 			}
 			return true;
 		}
 
 		public static int GetStartOfHeaderBufferIndex(byte[] buffer)
 		{
-			string requestReadSoFar = buffer.ToString();
+			string requestReadSoFar = Encoding.ASCII.GetString(buffer);
 			int i = 0;
 
+			Console.WriteLine("getting Index...");
 			if(_validRequestLine)
 			{
 				// at this point the entire first line is valid
 				// Therefore search to first "\r\n" and return index;
 				while(requestReadSoFar[i] != '\r' && requestReadSoFar[i+1] != '\n')
 				{
+					//Console.WriteLine("GetIndex: requestReadSoFar[" + i.ToString() +"]: " +requestReadSoFar[i].ToString());
+					//Console.WriteLine("GetIndex: requestReadSoFar[" + (i+1).ToString() +"]" + requestReadSoFar[i+1].ToString());
 					i++;
 				}
+				Console.WriteLine("requestReadSoFar[i+2]: "+ requestReadSoFar[i+2].ToString());
 				return i + 2;
 			}
 			return 0;

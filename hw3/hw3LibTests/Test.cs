@@ -11,15 +11,15 @@ namespace hw3LibTests
 	[TestFixture ()]
 	public class Tests
 	{
-		private byte[] _validRequest;
-		private byte[] _validRequestWithBody;
-		private byte[] _validRequestNoHeader;
-		private byte[] _inValidRequest;
-		private byte[] _inValidRequestBadVersion;
-		private byte[] _inValidRequestLowerCaseGet;
-		private byte[] _inValidRequestHeaderTwoColons;
-		private byte[] _inValidRequestStartingColon;
-		private byte[] _inValidRequestBadLineEndings;
+		private byte[] _validRequestBuffer;
+		private byte[] _validRequestWithBodyBuffer;
+		private byte[] _validRequestNoHeaderBuffer;
+		private byte[] _inValidRequestBuffer;
+		private byte[] _inValidRequestBadVersionBuffer;
+		private byte[] _inValidRequestLowerCaseGetBuffer;
+		private byte[] _inValidRequestHeaderTwoColonsBuffer;
+		private byte[] _inValidRequestStartingColonBuffer;
+		private byte[] _inValidRequestBadLineEndingsBuffer;
 
 		private TcpClient _client;
 		private TcpListener _listener;
@@ -84,22 +84,20 @@ namespace hw3LibTests
 		
 		[SetUp]
 		public void Init()
-		{
-			_validRequest = new byte[4096];
-			_inValidRequest = new byte[4096];
+		{			
 			_client = new TcpClient();
 			_listener = new TcpListener(IPAddress.Any, 4220);
 			_listener.Start();
 
-			_validRequest = Encoding.ASCII.GetBytes(_validString);
-			_validRequestWithBody = Encoding.ASCII.GetBytes(_RequestWithBodyString);
-			_validRequestNoHeader = Encoding.ASCII.GetBytes(_NoHeaderString);
-			_inValidRequest = Encoding.ASCII.GetBytes(_badGetString);
-			_inValidRequestBadVersion = Encoding.ASCII.GetBytes(_badVersionString);
-			_inValidRequestLowerCaseGet = Encoding.ASCII.GetBytes(_lowerCaseGetString);
-			_inValidRequestHeaderTwoColons = Encoding.ASCII.GetBytes (_BadHeaderTwoColonsString);
-			_inValidRequestStartingColon = Encoding.ASCII.GetBytes (_BadHeaderStartingColonString);
-			_inValidRequestBadLineEndings = Encoding.ASCII.GetBytes (_badLineEndsString);
+			_validRequestBuffer = Encoding.ASCII.GetBytes(_validString);
+			_validRequestWithBodyBuffer = Encoding.ASCII.GetBytes(_RequestWithBodyString);
+			_validRequestNoHeaderBuffer= Encoding.ASCII.GetBytes(_NoHeaderString);
+			_inValidRequestBuffer = Encoding.ASCII.GetBytes(_badGetString);
+			_inValidRequestBadVersionBuffer = Encoding.ASCII.GetBytes(_badVersionString);
+			_inValidRequestLowerCaseGetBuffer = Encoding.ASCII.GetBytes(_lowerCaseGetString);
+			_inValidRequestHeaderTwoColonsBuffer = Encoding.ASCII.GetBytes (_BadHeaderTwoColonsString);
+			_inValidRequestStartingColonBuffer = Encoding.ASCII.GetBytes (_BadHeaderStartingColonString);
+			_inValidRequestBadLineEndingsBuffer = Encoding.ASCII.GetBytes (_badLineEndsString);
 		}
 
 		[TearDown]
@@ -110,62 +108,87 @@ namespace hw3LibTests
 		}
 
 		[Test ()]
-		[TestCase()]
-		public void ReadFromStream()
-		{
-			// Arrange
+		public void ReadFromStreamThatHasValidRequest()
+		{			
 			bool result = false;
+			Stream networkStream = new MemoryStream (_validRequestBuffer);
 
-			// Case  
-			Stream networkStream = new MemoryStream(_validRequest);
+			result = WebServer.ReadFromNetworkStream (networkStream);
+			Assert.IsTrue (result);
+		}
+
+		[Test ()]
+		public void ReadFromStreamThatHasValidRequestAndABody()
+		{				
+			bool result = false;
+			Stream networkStream = new MemoryStream(_validRequestWithBodyBuffer);
+
 			result = WebServer.ReadFromNetworkStream(networkStream);
 			Assert.IsTrue(result);
+		}
 
-			// Case 
-			result = false;
-			networkStream = new MemoryStream(_validRequestWithBody);
+		[Test ()]
+		public void ReadFromStreamThatHasNoHeader()
+		{				
+			//TODO: 
+			bool result = false;
+			Stream networkStream = new MemoryStream(_validRequestNoHeaderBuffer);
+
 			result = WebServer.ReadFromNetworkStream(networkStream);
 			Assert.IsTrue(result);
+		}
 
-			// Case 
-			result = false;
-			networkStream = new MemoryStream(_validRequestNoHeader);
-			result = WebServer.ReadFromNetworkStream(networkStream);
-			Assert.IsTrue(result);
+		[Test ()]
+		public void ReadFromStreamThatHasInvalidRequest()
+		{				
+			bool result = true;
+			Stream networkStream = new MemoryStream (_inValidRequestBuffer);
+			result = WebServer.ReadFromNetworkStream (networkStream);
+			Assert.IsFalse (result);
+		}
 
-			// Case 
-			result = true;
-			networkStream = new MemoryStream(_inValidRequest);
-			result = WebServer.ReadFromNetworkStream(networkStream);
-			Assert.IsFalse(result);
+		[Test ()]
+		public void ReadFromStreamThatHasBadVersion()
+		{	
+			bool result = true;
+			Stream networkStream = new MemoryStream (_inValidRequestBadVersionBuffer);
+			result = WebServer.ReadFromNetworkStream (networkStream);
+			Assert.IsFalse (result);
+		}
 
-			// Case 
-			result = true;
-			networkStream = new MemoryStream(_inValidRequestBadVersion);
-			result = WebServer.ReadFromNetworkStream(networkStream);
-			Assert.IsFalse(result);
+		[Test ()]
+		public void ReadFromStreamThatHasLowercaseGetMethod()
+		{				
+			bool result = true;
+			Stream networkStream = new MemoryStream (_inValidRequestLowerCaseGetBuffer);
+			result = WebServer.ReadFromNetworkStream (networkStream);
+			Assert.IsFalse (result);
+		}
 
-			// Case 
-			result = true;
-			networkStream = new MemoryStream(_inValidRequestLowerCaseGet);
-			result = WebServer.ReadFromNetworkStream(networkStream);
-			Assert.IsFalse(result);
+		[Test ()]
+		public void ReadFromStreamThatHasTwoColonsInAHeader()
+		{
+			bool result = true;
+			Stream networkStream = new MemoryStream (_inValidRequestHeaderTwoColonsBuffer);
+			result = WebServer.ReadFromNetworkStream (networkStream);
+			Assert.IsFalse (result);
+		}
 
-			// Case 
-			result = true;
-			networkStream = new MemoryStream(_inValidRequestHeaderTwoColons);
-			result = WebServer.ReadFromNetworkStream(networkStream);
-			Assert.IsFalse(result);
+		[Test ()]
+		public void ReadFromStreamThatHasAStartingColonInTheHeader()
+		{
+			bool result = true;
+			Stream networkStream = new MemoryStream (_inValidRequestStartingColonBuffer);
+			result = WebServer.ReadFromNetworkStream (networkStream);
+			Assert.IsFalse (result);
+		}
 
-			// Case 
-			result = true;
-			networkStream = new MemoryStream(_inValidRequestStartingColon);
-			result = WebServer.ReadFromNetworkStream(networkStream);
-			Assert.IsFalse(result);
-
-			// Case 
-			result = true;
-			networkStream = new MemoryStream(_inValidRequestBadLineEndings);
+		[Test ()]
+		public void ReadFromStreamThatHasBadNewlines()
+		{
+			
+			bool result = true;
+			Stream networkStream = new MemoryStream(_inValidRequestBadLineEndingsBuffer);
 			result = WebServer.ReadFromNetworkStream(networkStream);
 			Assert.IsFalse(result);
 		}
@@ -177,7 +200,7 @@ namespace hw3LibTests
 			bool result = false;
 
 			// Act 
-			result = WebServer.ValidateRequestMethod(_validRequest);
+			result = WebServer.ValidateRequestMethod(_validRequestBuffer);
 				
 			// Assert
 			Assert.True(result);
@@ -190,7 +213,7 @@ namespace hw3LibTests
 			bool result = false;
 
 			// Act 
-			result = WebServer.ValidateRequestMethod(_inValidRequest);
+			result = WebServer.ValidateRequestMethod(_inValidRequestBuffer);
 
 			// Assert
 			Assert.False(result);
@@ -200,58 +223,81 @@ namespace hw3LibTests
 		public void ValidateRequestMethodWithBadGet()
 		{
 			// Arrange
-			bool result = false;
-			byte[] buffer = _inValidRequest;
+			bool result = true;
 
 			// Act 
-			result = WebServer.ValidateRequestMethod(buffer);
+			result = WebServer.ValidateRequestMethod(_inValidRequestBuffer);
 
 			// Assert
 			Assert.False(result);
 		}
 
 		[Test ()]
-		public void ValidateRequestVersionWithBadHTTPVersion()
+		public void ValidateVersionWithBadHTTPVersion()
 		{
 			// Arrange
-			bool result = false;
-
-			byte[] buffer = _inValidRequestBadVersion;
-
+			bool result = true;
 			// Act 
-			result = WebServer.ValidateRequestVersion(buffer);
-
+			result = WebServer.ValidateRequestVersion(_inValidRequestBadVersionBuffer);
 			// Assert
 			Assert.False(result);
 		}
 		
 		[Test ()]
-		public void ValidateRequestTests()
+		public void ValidateRequestBadVersion()
 		{
 			// Arrange
 			bool result = true;
+			result = WebServer.ValidateRequest (_inValidRequestBadVersionBuffer);
+			Assert.IsFalse (result);
+		}
 
-			// Case 1
-			byte[] buffer = _inValidRequestBadVersion;
-			result = WebServer.ValidateRequest(buffer, buffer.Length);
+		[Test ()]
+		public void ValidateRequestInvalidRequest()
+		{				
+			bool result = true;
+			result = WebServer.ValidateRequest (_inValidRequestBuffer);
+			Assert.IsFalse (result);
+		}
+
+		[Test ()]
+		public void ValidateRequestLowercaseGet()
+		{			
+			bool result = true;
+			result = WebServer.ValidateRequest (_inValidRequestLowerCaseGetBuffer);
+			Assert.IsFalse (result);
+		}
+
+		[Test ()]
+		public void ValidateRequestTwoHeaderColons()
+		{			
+			bool result = true;
+			result = WebServer.ValidateRequest(_inValidRequestHeaderTwoColonsBuffer);
 			Assert.IsFalse(result);
+		}
 
-			// Case 2
-			result = true;
-			buffer = _inValidRequest;
-			result = WebServer.ValidateRequest(buffer, buffer.Length);
+		[Test ()]
+		public void ValidateRequestStartingHeaderColon()
+		{			
+			bool result = true;
+			result = WebServer.ValidateRequest(_inValidRequestStartingColonBuffer);
 			Assert.IsFalse(result);
+		}
 
-			// Case 3
-			result = true;
-			buffer = _inValidRequestLowerCaseGet;
-			result = WebServer.ValidateRequest(buffer, buffer.Length);
+		[Test ()]
+		public void ValidateRequestBadLineEndings()
+		{			
+			bool result = true;
+			result = WebServer.ValidateRequest(_inValidRequestBadLineEndingsBuffer);
 			Assert.IsFalse(result);
+		}
 
-			// Case 4
-			result = false;
-			buffer = _validRequest;
-			result = WebServer.ValidateRequest(buffer, buffer.Length);
+
+		[Test ()]
+		public void ValidateRequestValidRequest()
+		{			
+			bool result = false;
+			result = WebServer.ValidateRequest(_validRequestBuffer);
 			Assert.IsTrue(result);
 		}
 
