@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
+using System.IO;
 
 namespace CS422
 {
@@ -39,18 +40,22 @@ namespace CS422
 			TcpClient client = new TcpClient();
 			TcpListener listener = new TcpListener(IPAddress.Any, _port);
 			listener.Start();
+			Console.WriteLine ("started TCPListener");
 
 			while (active) 
 			{
 				// blocking call to accept client
+				Console.WriteLine("in active while");
 				client = listener.AcceptTcpClient();
 				NetworkStream networkStream = client.GetStream();
 
 				// read and validate what was read
+				Console.WriteLine("about to read");
 				active = ReadFromNetworkStream(networkStream);
 
 				if (active)
 				{
+					Console.WriteLine("about to Write");
 					WriteResponseToClient (networkStream, responseTemplate);
 				}
 				else 
@@ -71,13 +76,14 @@ namespace CS422
 		// Request methods
 		//
 		// Reads from network stream and validates as it goes
-		public static bool ReadFromNetworkStream(NetworkStream networkStream)
+		public static bool ReadFromNetworkStream(Stream networkStream)
 		{
 			byte[] buffer = new byte[4096];
 			int bytesRead = 0, totalBytesRead = 0;
 			string requestReadSoFar;
 			bool validRequest = false;
 
+			Console.WriteLine("in Read");
 			if (networkStream.CanRead) 
 			{
 				do {
