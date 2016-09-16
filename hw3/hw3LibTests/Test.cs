@@ -83,47 +83,47 @@ namespace hw3LibTests
 		}
 
 		[Test ()]
-		public void ValidateRequestWithValidRequest()
+		public void ValidateRequestMethodWithValidString()
 		{
 			// Arrange
 			bool result = false;
 
 			// Act 
-			result = WebServer.ValidateRequest(_validRequest);
+			result = WebServer.ValidateRequestMethod(_validRequest);
 				
 			// Assert
 			Assert.True(result);
 		}
 
 		[Test ()]
-		public void ValidateRequestWithInvalidRequest()
+		public void ValidateRequestMethodWithInvalidRequest()
 		{
 			// Arrange
 			bool result = false;
 
 			// Act 
-			result = WebServer.ValidateRequest(_inValidRequest);
+			result = WebServer.ValidateRequestMethod(_inValidRequest);
 
 			// Assert
 			Assert.False(result);
 		}
 
 		[Test ()]
-		public void ValidateHTTPRequestLineWithBadGet()
+		public void ValidateRequestMethodWithBadGet()
 		{
 			// Arrange
 			bool result = false;
 			byte[] buffer = _inValidRequest;
 
 			// Act 
-			result = WebServer.ValidateHTTPRequestLine(buffer);
+			result = WebServer.ValidateRequestMethod(buffer);
 
 			// Assert
 			Assert.False(result);
 		}
 
 		[Test ()]
-		public void ValidateHTTPRequestLineWithBadHTTPVersion()
+		public void ValidateRequestVersionWithBadHTTPVersion()
 		{
 			// Arrange
 			bool result = false;
@@ -131,7 +131,7 @@ namespace hw3LibTests
 			byte[] buffer = _inValidRequestBadVersion;
 
 			// Act 
-			result = WebServer.ValidateHTTPRequestLine(buffer);
+			result = WebServer.ValidateRequestVersion(buffer);
 
 			// Assert
 			Assert.False(result);
@@ -141,7 +141,7 @@ namespace hw3LibTests
 		public void GetHTTPRequestLine()
 		{
 			// Arrange
-			char[] result = new char[2048];
+			string result;
 
 			// Case 1
 			byte[] buffer = _inValidRequestBadVersion;
@@ -160,7 +160,7 @@ namespace hw3LibTests
 			buffer = _validRequest;
 			result = WebServer.GetRequestLine(buffer);
 
-			Assert.False(result);
+			Assert.Fail();
 		}
 
 
