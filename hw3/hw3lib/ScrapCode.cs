@@ -171,3 +171,109 @@
 //	// CRLF
 //	return true;
 //}
+
+//
+//// Get the headers as a string
+//Console.WriteLine("Validating request headers");
+//string headerString = Encoding.ASCII.GetString(buffer);
+//Console.WriteLine();
+////Console.WriteLine("string: " + headerString.ToString());
+//int startOfHeadersIndex = GetStartOfHeaderBufferIndex (buffer);
+//Console.WriteLine("Index: " + startOfHeadersIndex.ToString());
+//
+//if(startOfHeadersIndex == 0)
+//{
+//	// Error: shouldn't be in this function if 0 is returned from getIndex
+//	return false;
+//}
+//
+////headerString = headerString.Substring (startOfHeadersIndex);
+////Console.WriteLine();
+////Console.WriteLine("HeaderSection: " + headerString);
+////Console.WriteLine(headerString.Length.ToString());
+//
+//int i = startOfHeadersIndex;
+//bool firstCharacter = true, hitColon = false;
+//
+//Console.WriteLine("About to enter loooop");
+//while (i < headerString.Length && !_fullHeaders ) 
+//{
+//	Console.WriteLine("Next Header Line");
+//	// inner loop is for one header line
+//	while (headerString [i] != '\r' && i < headerString.Length) 
+//	{				
+//		Console.WriteLine("Char[" + i.ToString() + "]: " + headerString[i]);
+//		// check each header...
+//		if (firstCharacter) 
+//		{
+//			if (!char.IsLetter (headerString [i])) 
+//			{							
+//				return false;
+//			} 
+//			else 
+//			{
+//				firstCharacter = false;
+//			}
+//		} 
+//		else 
+//		{
+//			if (headerString [i] == ':') 
+//			{
+//				if(hitColon)
+//				{
+//					// Already hit a colon on this line
+//					return false;
+//				}
+//				hitColon = true;
+//			}
+//		}
+//		i++;
+//	}
+//
+//	//Check for a valid line end
+//	if(headerString [i+1] != '\n')
+//	{
+//		// hit an \r but not a \n
+//		return false;
+//	}
+//
+//	if (!hitColon) {
+//		//Invalid: finished line and no colon was encountered
+//		return false;
+//	}
+//
+//	// check for double return
+//	if (headerString[i] == '\r' && headerString[i+2] == '\r')
+//	{
+//		// Account for double Newline
+//		_fullHeaders = true;
+//		return true;
+//	}
+//
+//	// Reset flags for next line
+//	hitColon = false;
+//	firstCharacter = true;
+//
+//	i ++;
+//}
+//return true;
+
+
+
+
+//
+//public static bool ValidateRequestHeaders(byte[] buffer)
+//{
+//	string[] headers = Encoding.ASCII.GetString(buffer).Split('\n');
+//
+//	for (int i = 1; i < headers.Length; i++)
+//	{
+//		Console.WriteLine(headers[i]);
+//		if (!Char.IsLetter(headers[i][0]) || !headers[i].Contains(":"))
+//		{	
+//			return false;
+//		}
+//	}
+//	_fullHeaders = true;
+//	return true;
+//}

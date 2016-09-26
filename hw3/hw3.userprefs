@@ -1,6 +1,12 @@
 ﻿<Properties StartupItem="hw3/hw3.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="hw3lib/WebServer.cs">
+    <Files>
+      <File FileName="hw3lib/ScrapCode.cs" Line="176" Column="3" />
+      <File FileName="hw3/Program.cs" Line="23" Column="1" />
+      <File FileName="hw3lib/WebServer.cs" Line="211" Column="24" NotebookId="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

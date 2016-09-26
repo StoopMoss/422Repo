@@ -45,12 +45,15 @@ namespace CS422
 
 			while (active) 
 			{
+				Console.WriteLine("Hi from ");
 				// blocking call to accept client
 				client = listener.AcceptTcpClient();
 				NetworkStream networkStream = client.GetStream();
 
 				// read and validate what was read
 				active = ReadFromNetworkStream(networkStream);
+				Console.WriteLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+				Console.WriteLine("Just read from ");
 
 				if (active)
 				{
@@ -81,7 +84,7 @@ namespace CS422
 			int bytesRead = 0, totalBytesRead = 0;
 			bool validRequest = false;
 
-			Console.WriteLine("in Read");
+			//Console.WriteLine("in Read");
 			if (networkStream.CanRead) 
 			{
 				do {
@@ -141,9 +144,18 @@ namespace CS422
 			{
 				Console.WriteLine("Validate: Check Headers");
 				if( !ValidateRequestHeaders(buffer) )
-				{ return false; }											
+				{
+					Console.WriteLine("--------------------------------");
+					return false; 
+				}											
 			}
 
+			Console.WriteLine("_fullMethod "+ 
+				_fullMethod.ToString()+"_fullURI "+ 
+				_fullURI.ToString()+"_fullVersion"+
+				_fullVersion.ToString()+"  _fullHeaders)"+
+				_fullHeaders.ToString());
+			
 			//TODO: do i need full headers?
 			if (_fullMethod && _fullURI && _fullVersion && _fullHeaders)
 			{
@@ -197,11 +209,17 @@ namespace CS422
 			string requestSoFar = Encoding.ASCII.GetString(buffer);
 			int i = 0;
 			int whitespaces = 0;
+			int uriStart = 0, uriEnd = 0;
 
 			while (i < requestSoFar.Length )
 			{
+				if(whitespaces == 1)
+				{
+					uriStart = i;
+				}
 				if (whitespaces == 2) 
 				{
+					uriEnd = i;
 					_fullURI = true;
 					break; 
 				}
@@ -215,6 +233,7 @@ namespace CS422
 				}
 				i++;
 			}
+			_URL = requestSoFar.Substring(uriStart, uriEnd);
 			return true;
 		}
 
@@ -252,89 +271,34 @@ namespace CS422
 
 		public static bool ValidateRequestHeaders(byte[] buffer)
 		{
-			// Get the headers as a string
-			Console.WriteLine("Validating request headers");
-			string headerString = Encoding.ASCII.GetString(buffer);
-			Console.WriteLine();
-			//Console.WriteLine("string: " + headerString.ToString());
-			int startOfHeadersIndex = GetStartOfHeaderBufferIndex (buffer);
-			Console.WriteLine("Index: " + startOfHeadersIndex.ToString());
+			String bufferAsString = Encoding.ASCII.GetString(buffer);
+			bufferAsString = bufferAsString.Substring(0, bufferAsString.IndexOf("\r\n\r\n"));
 
-			if(startOfHeadersIndex == 0)
+
+			string[] headers = bufferAsString.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+			for (int i = 1; i < headers.Length; i++)
 			{
-				// Error: shouldn't be in this function if 0 is returned from getIndex
-				return false;
-			}
+				String header = headers[i];
+				Console.WriteLine("'header' = '{0}'", header);
 
-			//headerString = headerString.Substring (startOfHeadersIndex);
-			//Console.WriteLine();
-			//Console.WriteLine("HeaderSection: " + headerString);
-			//Console.WriteLine(headerString.Length.ToString());
-
-			int i = startOfHeadersIndex;
-			bool firstCharacter = true, hitColon = false;
-
-			Console.WriteLine("About to enter loooop");
-			while (i < headerString.Length && !_fullHeaders ) 
-			{
-				Console.WriteLine("Next Header Line");
-				// inner loop is for one header line
-				while (headerString [i] != '\r' && i < headerString.Length) 
-				{				
-					Console.WriteLine("Char[" + i.ToString() + "]: " + headerString[i]);
-					// check each header...
-					if (firstCharacter) 
+				if (String.IsNullOrEmpty(header))
+				{
+					Console.WriteLine("Empty String!!!");
+				}
+				else
+				{
+					if (Char.IsLetter(header[0]) && header.Contains(":"))
 					{
-						if (!char.IsLetter (headerString [i])) 
-						{							
-							return false;
-						} 
-						else 
-						{
-							firstCharacter = false;
-						}
-					} 
-					else 
-					{
-						if (headerString [i] == ':') 
-						{
-							if(hitColon)
-							{
-								// Already hit a colon on this line
-								return false;
-							}
-							hitColon = true;
-						}
+						Console.WriteLine("This line contains a colon AND a first-position letter.");
 					}
-					i++;
+					else{
+						Console.WriteLine("DARN it's returning false!!!!");
+						return false;
+					}
 				}
-
-				//Check for a valid line end
-				if(headerString [i+1] != '\n')
-				{
-					// hit an \r but not a \n
-					return false;
-				}
-
-				if (!hitColon) {
-					//Invalid: finished line and no colon was encountered
-					return false;
-				}
-
-				// check for double return
-				if (headerString[i] == '\r' && headerString[i+2] == '\r')
-				{
-					// Account for double Newline
-					_fullHeaders = true;
-					return true;
-				}
-
-				// Reset flags for next line
-				hitColon = false;
-				firstCharacter = true;
-
-				i ++;
 			}
+			_fullHeaders = true;
 			return true;
 		}
 
@@ -366,7 +330,6 @@ namespace CS422
 		public static bool WriteResponseToClient(NetworkStream networkStream, string responseTemplate)
 		{
 			int studentId = 11282717;
-			_URL = "/blah/ForNow"; // TODO: need to get from request
 
 			// fill 
 			string response = string.Format(responseTemplate, studentId, DateTime.Now, _URL);

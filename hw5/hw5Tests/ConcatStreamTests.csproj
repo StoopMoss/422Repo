@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F959FFCC-8A53-4410-96A4-839BB7F59809}</ProjectGuid>
+    <ProjectGuid>{C0B2A3ED-05F7-42F8-85E5-3E6E24B141D0}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>hw3LibTests</RootNamespace>
-    <AssemblyName>hw3LibTests</AssemblyName>
+    <RootNamespace>hw5Tests</RootNamespace>
+    <AssemblyName>hw5Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,7 +30,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -39,5 +39,11 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\hw5\hw5.csproj">
+      <Project>{5A58ED13-E0DE-4BE0-A7BB-E5701A768E53}</Project>
+      <Name>hw5</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -20,6 +20,8 @@ namespace hw3LibTests
 		private byte[] _inValidRequestHeaderTwoColonsBuffer;
 		private byte[] _inValidRequestStartingColonBuffer;
 		private byte[] _inValidRequestBadLineEndingsBuffer;
+		private byte[] _inValidRequestBufferHeaderWithNonLetterAtStart;
+		private byte[] _inValidRequestBufferHeaderWithNoColons;
 
 		private TcpClient _client;
 		private TcpListener _listener;
@@ -31,6 +33,20 @@ namespace hw3LibTests
 			"Accept-Encoding: gzip, deflate\r\n" +
 			"Connection: Keep-Alive";
 
+		private string _headerWithNonLetterAtStart = "GET /hello.htm HTTP/1.1\r\n" +
+			"User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\n" +
+			": www.tutorialspoint.com\r\n" +
+			"Accept-Language: en-us\r\n" +
+			"Accept-Encoding: gzip, deflate\r\n" +
+			"Connection: Keep-Alive";
+
+		private string _headerWithNoColons = "GET /hello.htm HTTP/1.1\r\n" +
+			"User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\n" +
+			": www.tutorialspoint.com\r\n" +
+			"Accept-Language: en-us\r\n" +
+			"Accept-Encoding: gzip, deflate\r\n" +
+			"Connection: Keep-Alive";
+		
 		private string _RequestWithBodyString = "GET /hello.htm HTTP/1.1\r\n" +
 			"User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\n" +
 			"Host: www.tutorialspoint.com\r\n" +
@@ -98,6 +114,8 @@ namespace hw3LibTests
 			_inValidRequestHeaderTwoColonsBuffer = Encoding.ASCII.GetBytes (_BadHeaderTwoColonsString);
 			_inValidRequestStartingColonBuffer = Encoding.ASCII.GetBytes (_BadHeaderStartingColonString);
 			_inValidRequestBadLineEndingsBuffer = Encoding.ASCII.GetBytes (_badLineEndsString);
+			_inValidRequestBufferHeaderWithNonLetterAtStart = Encoding.ASCII.GetBytes(_headerWithNonLetterAtStart);
+			_inValidRequestBufferHeaderWithNoColons = Encoding.ASCII.GetBytes(_headerWithNoColons);
 		}
 
 		[TearDown]
@@ -106,6 +124,29 @@ namespace hw3LibTests
 			_client.Close ();
 			_listener.Stop ();
 		}
+
+		[Test()]
+		public void ValidateRequestHeadersWithValidBuffer()
+		{
+			bool result = WebServer.ValidateRequestHeaders(_validRequestBuffer);
+			Assert.IsTrue(result);
+
+		}
+
+		[Test()]
+		public void ValidateRequestHeadersWithInValidBuffer()
+		{
+			bool result = WebServer.ValidateRequestHeaders(_inValidRequestBufferHeaderWithNonLetterAtStart);
+			Assert.IsFalse(result);
+		}
+
+		[Test()]
+		public void ValidateRequestHeadersWithNoColonsInHeader()
+		{
+			bool result = WebServer.ValidateRequestHeaders(_inValidRequestBufferHeaderWithNoColons);
+			Assert.IsFalse(result);
+		}
+
 
 		[Test ()]
 		public void ReadFromStreamThatHasValidRequest()
