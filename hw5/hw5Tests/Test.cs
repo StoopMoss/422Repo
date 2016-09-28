@@ -15,13 +15,14 @@ namespace hw5Tests
 			//Arrange
 			byte[] byteArray = Encoding.ASCII.GetBytes("memoryStream string");
 			MemoryStream stream1 = new MemoryStream(byteArray);
+			MemoryStream stream2 = new MemoryStream(byteArray);
 
-			FileStream stream2 = new FileStream();
-
+			Console.WriteLine("hjgfkjghkjgkjgkjhgkjhgkjhg");
 			//Act
 			ConcatStream concatStream = new ConcatStream(stream1, stream2);
 
 			//Assert
+			Assert.NotNull(concatStream);
 			//concatStream
 		}
 	}
