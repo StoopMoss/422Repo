@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.IO;
 using CS422;
 
@@ -15,6 +16,9 @@ namespace ConsoleApp
 
 		static public void testConcatStream()
 		{
+			byte[] buffer1 = Encoding.ASCII.GetBytes ("");
+			byte[] buffer2 = Encoding.ASCII.GetBytes ("");
+
 			Stream stream1 = new MemoryStream();
 			Stream stream2 = new MemoryStream();
 

@@ -8,17 +8,17 @@ namespace CS422
 {
 	public class WebServer
 	{				
-		private static string _URL;
+		private string _URL;
 
 		//Private members used for validation
-		private static bool _validRequestLine;
-		private static bool _validRequestHeaders;
+		private bool _validRequestLine;
+		private bool _validRequestHeaders;
 
-		private static bool _fullMethod;
-		private static bool _fullVersion;
-		private static bool _fullURI;
-		private static bool _fullHeaders;
-		private static bool _fullRequest;
+		private bool _fullMethod;
+		private bool _fullVersion;
+		private bool _fullURI;
+		private bool _fullHeaders;
+		private bool _fullRequest;
 
 		public WebServer ()
 		{}
@@ -90,7 +90,7 @@ namespace CS422
 		// Request methods
 		//
 		// Reads from network stream and validates as it goes
-		public static bool ReadFromNetworkStream(Stream networkStream)
+		public bool ReadFromNetworkStream(Stream networkStream)
 		{
 			byte[] buffer = new byte[4096];
 			int bytesRead = 0, totalBytesRead = 0;
@@ -123,7 +123,7 @@ namespace CS422
 			return false;
 		}
 
-		private static WebRequest BuildRequest(TcpClient client)
+		private WebRequest BuildRequest(TcpClient client)
 		{
 			
 		}
