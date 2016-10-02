@@ -20,6 +20,8 @@ namespace CS422
 		private bool _fullHeaders;
 		private bool _fullRequest;
 
+		private 
+
 		public WebServer ()
 		{}
 
