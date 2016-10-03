@@ -1,8 +1,0 @@
-/home/conner/Documents/422/422Repo/hw5/hw5Tests/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/home/conner/Documents/422/422Repo/hw5/hw5Tests/bin/Debug/hw5Tests.dll.mdb
-/home/conner/Documents/422/422Repo/hw5/hw5Tests/bin/Debug/hw5Tests.dll
-/home/conner/Documents/422/422Repo/hw5/hw5Tests/obj/Debug/hw5Tests.dll
-/home/conner/Documents/422/422Repo/hw5/hw5Tests/obj/Debug/hw5Tests.dll.mdb
-/home/conner/Documents/422/422Repo/hw5/hw5Tests/bin/Debug/nunit.framework.dll
-/home/conner/Documents/422/422Repo/hw5/hw5Tests/bin/Debug/hw5.dll
-/home/conner/Documents/422/422Repo/hw5/hw5Tests/bin/Debug/hw5.dll.mdb
