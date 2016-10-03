@@ -33,6 +33,12 @@ namespace CS422
 			set{_buffer = value;}
 		}
 
+		public bool FullRequest
+		{
+			get{return _fullRequest;}
+			//set{_fullRequest = value;}
+		}
+
 		/////////////
 		//Methods
 		////////////

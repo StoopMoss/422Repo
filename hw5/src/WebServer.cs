@@ -29,38 +29,38 @@ namespace CS422
 
 			while (active) 
 			{			
-				//
 				/*
 				• Accept	new	TCP	socket	connection
 				• Get a	thread	from	the	thread	pool	and	pass	it	the	TCP	socket
 				• Repeat
 				*/
-				Validator validator = new Validator();
-
 				TcpClient client = new TcpClient();
 				client = listener.AcceptTcpClient();
 				
-				NetworkStream networkStream = client.GetStream();
 
-				// read and validate what was read
-				active = ReadFromNetworkStream(networkStream);
+				// read and validate what was read				
+				WebRequest request = BuildRequest(client);
+				if (request == null)
+				{
+					client.Dispose();
+				}
+				else
+				{}
 				
-				if (active)
-				{
-					Console.WriteLine("about to Write");
-					WriteResponseToClient (networkStream, responseTemplate, Validator);
-				}
-				else 
-				{
-					// read failed, close connection
-					networkStream.Dispose();
-					client.Close();
-					return active;
-				}
-				networkStream.Dispose();
+				// if (active)
+				// {
+				// 	Console.WriteLine("about to Write");
+				// 	WriteResponseToClient (networkStream, Validator);
+				// }
+				// else 
+				// {
+				// 	// read failed, close connection
+				// 	networkStream.Dispose();
+				// 	//client.Close();
+				// 	return active;
+				// }
+				// networkStream.Dispose();
 			}
-
-			client.Close();
 			return true;			
 		}
 
@@ -68,41 +68,68 @@ namespace CS422
 		// Request methods
 		//
 		// Reads from network stream and validates as it goes
-		public static bool ReadFromNetworkStream(Stream networkStream)
+		public static bool ReadFromClientNetworkStream(TcpClient client)
 		{
 			byte[] buffer = new byte[4096];
 			int bytesRead = 0, totalBytesRead = 0;
+			NetworkStream networkStream = client.GetStream();
+			Validator validator = new Validator();
+			bool validRequest = false;
+
 			
-			// //Console.WriteLine("in Read");
-			// if (networkStream.CanRead) 
-			// {
-			// 	do {
-			// 		// read from stream until buffer is full or Read() returns 0
-			// 		bytesRead = networkStream.Read (buffer, totalBytesRead, buffer.Length - totalBytesRead);
-			// 		if (bytesRead == 0)
-			// 		{
-			// 			break;
-			// 		}
-			// 		Console.WriteLine("Read " + bytesRead.ToString() + "bytes");
-			//		validator.ValidateRequest(buffer);
-			// 		validRequest = ValidateRequest(buffer);
+			Console.WriteLine("in Read");
+			if (networkStream.CanRead) 
+			{
+				do 
+				{
+					// read from stream until buffer is full or Read() returns 0
+					bytesRead = networkStream.Read (buffer, totalBytesRead, buffer.Length - totalBytesRead);
+					if (bytesRead == 0)
+			 		{
+						break;
+					}
+					Console.WriteLine("Read " + bytesRead.ToString() + "bytes");
+					
+					validRequest = validator.ValidateRequest(buffer);
 
-			// 		// If valid and full no more reading is required
-			// 		// If not full then request has not been read fully
-			// 		if ( _fullRequest && validRequest)
-			// 		{
-			// 			// stop reading and send back a response
-			// 			return true;
-			// 		}
+					// If valid and full no more reading is required
+					// If not full then request has not been read fully
+					if (validator.FullRequest && validRequest)
+			 		{
+						// stop reading and send back a response
+						return true;
+			 		}
 
-
-			// 	} while (validRequest);
-			// }
+			 	} while (validRequest);
+			}
 			return false;
 		}
 
 		private static WebRequest BuildRequest(TcpClient client)
 		{
+			// Read from client 			
+			bool requestIsValid = ReadFromClientNetworkStream(client);
+
+			if (requestIsValid)
+			{
+				// build request object
+
+				// option 1
+				// have validator store a WebRequest object
+				// That way it can build the request as it validates
+
+				// option 2
+				// Have validator store all bytes
+				// then parse bytes again 
+				// and build request that is known to be valid
+
+			}
+			else
+			{
+				// return null so caller can dispose of TCP client
+				return null;
+			}
+
 			return new WebRequest();
 		}		
 
