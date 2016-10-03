@@ -40,12 +40,6 @@ namespace CS422
 
 				// read and validate what was read				
 				WebRequest request = BuildRequest(client);
-				if (request == null)
-				{
-					client.Dispose();
-				}
-				else
-				{}
 				
 				// if (active)
 				// {
@@ -126,7 +120,10 @@ namespace CS422
 			}
 			else
 			{
-				// return null so caller can dispose of TCP client
+				// return null so caller can dispose of TCP client		
+				client.GetStream().Close();
+				client.Close();
+				//client.Dispose();		
 				return null;
 			}
 
@@ -141,7 +138,7 @@ namespace CS422
 			int studentId = 11282717;
 
 			// fill 
-			string response = string.Format(responseTemplate, studentId, DateTime.Now, Validator.URL);
+			string response = string.Format(responseTemplate, studentId, DateTime.Now, validator.URL);
 			byte[] buffer = Encoding.ASCII.GetBytes(response);
 
 			//Write to stream
