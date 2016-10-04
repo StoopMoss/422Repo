@@ -11,6 +11,7 @@ build: $(HW_DLL)
 
 .PHONY: test
 test: $(TESTS_DLL)
+	- nunit-console -noxml $(TESTS_DLL)
 
 .PHONY: zip
 zip: hw$(HW_NUM).zip
