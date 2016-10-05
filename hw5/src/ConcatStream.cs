@@ -15,60 +15,10 @@ namespace CS422
 
 		private bool _lengthSupport;
 		private bool _usedFirstConstructor;
+		private bool _usedSecondConstructor;
 
-		private MemoryStream _stream;
-
-
-		///////////////
-		//Constructors 
-		public ConcatStream(Stream first, Stream second)
-		{
-			SetProperties(first, second);
-
-			//TODO: figure out the right way to see if Length is supported
-			//Set LengthSupport
-			if (first.Length != 0 && second.Length  != 0) 
-			{
-				this.LengthSupport = true;
-			}
-			else if(first.Length != 0)
-			{
-				throw new Exception ("First stream does not support length");
-			}
-
-			//Concat streams
-			_stream = new MemoryStream();
-			first.CopyTo( _stream);
-			second.CopyTo(_stream);
-			Position = 0;
-			//Length = _stream.Length;
-			_usedFirstConstructor = true;
-												
-		}
-
-		public ConcatStream(Stream first, Stream second, long fixedLength)
-		{
-			SetProperties(first, second);
-
-			//TODO: figure out the right way to see if Length is supported
-			//Set LengthSupport
-			if(first.Length != 0)
-			{
-				throw new Exception ("First stream does not support length");
-			}
-			else{
-				LengthSupport = true;
-			}
-
-			//Concat streams
-			_stream = new MemoryStream();
-			first.CopyTo( _stream);
-			second.CopyTo(_stream);
-			Position = 0;
-			//Length = fixedLength;
-			_usedFirstConstructor = false;
-				
-		}
+		private MemoryStream _stream1;
+		private MemoryStream _stream2;
 
 
 		////////////
@@ -114,7 +64,10 @@ namespace CS422
 
 		public override long Length
 		{
-			get { return _length;} 
+			get 
+			{
+				 return _length;
+			} 
 		}
 
 		public bool LengthSupport
@@ -123,6 +76,85 @@ namespace CS422
 			set { _lengthSupport = value;} 
 		}
 
+
+		///////////////
+		//Constructors 
+		public ConcatStream(Stream first, Stream second)
+		{
+			long firstStreamLength = 0;
+			long secondStreamLength = 0;
+
+			// Check first stream's Length Support
+			try
+			{
+				firstStreamLength = first.Length;
+			}
+			catch (NotSupportedException)
+			{				
+				throw new ArgumentException();
+			}
+			// Check second stream's Length Support
+			try
+			{
+				secondStreamLength = second.Length;
+			}
+			catch (NotSupportedException)
+			{				
+				LengthSupport = false;
+			}			
+
+			if (secondStreamLength != 0)
+			{
+				LengthSupport = true;
+			}
+		
+			SetProperties(first, second);
+			_usedFirstConstructor = true;
+			Position = 0;
+
+			//Concat streams
+			// _stream1 = new MemoryStream();
+			// first.CopyTo( _stream);
+			// second.CopyTo(_stream);
+			//Length = _stream.Length;
+												
+		}
+
+		public ConcatStream(Stream first, Stream second, long fixedLength)
+		{
+			long firstStreamLength = 0;
+
+			// Check first stream's Length Support
+			try
+			{
+				firstStreamLength = first.Length;
+				if (fixedLength < firstStreamLength)
+				{
+					throw new ArgumentException(
+						"fixedLength was less than first stream's length");	
+				}
+			}
+			catch (NotSupportedException)
+			{				
+				throw new ArgumentException();
+			}
+			
+			SetProperties(first, second);
+			LengthSupport = true;
+			_length = fixedLength;			
+			_usedSecondConstructor = true;
+			Position = 0;
+
+			//Concat streams
+			// _stream1 = new MemoryStream();
+			// first.CopyTo( _stream);
+			// second.CopyTo(_stream);
+			// //Length = fixedLength;
+			
+				
+		}
+
+	
 
 		//////////
 		//Methods	
@@ -152,11 +184,18 @@ namespace CS422
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
+			// If the second stream doesn’t support seeking, 
+			// provide forward-only reading functionality with no seeking
+			// if (CanSeek)
+			// { blah }
 			return 0;
 		}
 
 		//////////////////
 		//Utility Methods
+
+		// Sets the capabilities of the concat stream to 
+		// the lesser capabilities of the combined streams
 		public void SetProperties(Stream first, Stream second)
 		{
 			//Set CanRead
