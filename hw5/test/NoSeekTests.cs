@@ -25,25 +25,34 @@ namespace hw5Tests
         [Test]
         public void ConstructorOne()
         {
-            byte[] _byteArray = Encoding.ASCII.GetBytes("memoryStream string");
+            byte[] _byteArray = Encoding.ASCII.GetBytes("Stream string");
+            
             NoSeekMemoryStream _stream = new NoSeekMemoryStream(_byteArray);      
+            
             Assert.NotNull(_stream);
             Assert.IsFalse(_stream.CanSeek);
+            Assert.IsTrue(_stream.CanRead);
+            Assert.IsTrue(_stream.CanWrite);
+            Assert.That(()=> _stream.Length, Throws.Exception );
         }
 
         [Test]
         public void ConstructorTwo()
         {
-            byte[] _byteArray = Encoding.ASCII.GetBytes("memoryStream string");
+            byte[] _byteArray = Encoding.ASCII.GetBytes("Stream string");
             NoSeekMemoryStream _stream = new NoSeekMemoryStream(_byteArray, 0, _byteArray.Length);
+           
             Assert.NotNull(_stream);
             Assert.IsFalse(_stream.CanSeek);
+            Assert.IsTrue(_stream.CanRead);
+            Assert.IsTrue(_stream.CanWrite);
+            Assert.That(()=> _stream.Length, Throws.Exception );
         }
 
         [Test]
         public void CanSeekPropertyShouldReturnFalse()
         {            
-            byte[] _byteArray = Encoding.ASCII.GetBytes("memoryStream string");
+            byte[] _byteArray = Encoding.ASCII.GetBytes("Stream string");
             NoSeekMemoryStream _stream = new NoSeekMemoryStream(_byteArray);
 
             bool result = _stream.CanSeek;
@@ -54,11 +63,20 @@ namespace hw5Tests
         [Test]
         public void SeekShouldThrowNotSupportedException()
         {
-            byte[] _byteArray = Encoding.ASCII.GetBytes("memoryStream string");
+            byte[] _byteArray = Encoding.ASCII.GetBytes("Stream string");
             NoSeekMemoryStream _stream = new NoSeekMemoryStream(_byteArray);
            
             Assert.Throws<NotSupportedException>(
                 ()=> _stream.Seek(0, SeekOrigin.Begin) );
+        }
+
+        [Test]
+        public void LengthPropertyShouldThrowNotSupportedException()
+        {
+            byte[] _byteArray = Encoding.ASCII.GetBytes("Stream string");
+            NoSeekMemoryStream _stream = new NoSeekMemoryStream(_byteArray);
+            
+            Assert.That(()=> _stream.Length, Throws.Exception );
         }
     }
 }

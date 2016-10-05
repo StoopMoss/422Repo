@@ -168,9 +168,13 @@ namespace hw5Tests
 		public void ReadAllBytesFromConcatStreamWithSeekCapability()
 		{
 			byte[] byteArray1 = Encoding.ASCII.GetBytes("first");
-			MemoryStream stream1 = new MemoryStream(byteArray1);
 			byte[] byteArray2 = Encoding.ASCII.GetBytes("second");
+			MemoryStream stream1 = new MemoryStream(byteArray1);			
 			MemoryStream stream2 = new MemoryStream(byteArray2);
+
+			
+
+
 		}
 
 		[Test]
