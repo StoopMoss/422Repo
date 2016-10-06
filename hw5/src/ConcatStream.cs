@@ -14,8 +14,8 @@ namespace CS422
 		private bool _canWrite;
 
 		private bool _lengthSupport;
-		private bool _usedFirstConstructor;
-		private bool _usedSecondConstructor;
+		private bool _fixedLength;
+		//private bool _usedSecondConstructor;
 
 		private Stream _stream1;
 		private Stream _stream2;
@@ -82,7 +82,7 @@ namespace CS422
 		public ConcatStream(Stream first, Stream second)
 		{
 			long firstStreamLength = 0;
-			long secondStreamLength = 0;
+			long secondStreamLength = -1;
 
 			// Check first stream's Length Support
 			try
@@ -103,13 +103,14 @@ namespace CS422
 				LengthSupport = false;
 			}			
 
-			if (secondStreamLength != 0)
+			if (secondStreamLength != -1)
 			{
 				LengthSupport = true;
+				_length = firstStreamLength + secondStreamLength;
 			}
 		
 			SetProperties(first, second);
-			_usedFirstConstructor = true;
+			_fixedLength = false;
 			Position = 0;
 
 			_stream1 = first;
@@ -139,8 +140,11 @@ namespace CS422
 			SetProperties(first, second);
 			LengthSupport = true;
 			_length = fixedLength;			
-			_usedSecondConstructor = true;
+			_fixedLength = true;
 			Position = 0;
+
+			_stream1 = first;
+			_stream2 = second;
 		}
 
 	
@@ -154,6 +158,14 @@ namespace CS422
 
 		public override long Seek(long offset, SeekOrigin origin)
 		{
+			if(this.CanSeek)
+			{
+				//Seek 
+			}
+			else
+			{
+				throw new NotSupportedException ();
+			}
 			throw new NotImplementedException ();
 		}
 
@@ -166,23 +178,133 @@ namespace CS422
 			}
 		}
 
-		public override void Write(byte[] byteArray, int offset, int count)
-		{
-			throw new NotImplementedException ();
-		}
-
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			// If the second stream doesn’t support seeking, 
-			// provide forward-only reading functionality with no seeking
-			// if (CanSeek)
-			// { blah }
-			return 0;
+			int bytesRead = 0;
+			int i = 0;
+			int bytesToReadFromS2 = 0;
+
+			Console.WriteLine("In Read: Position = " + Position.ToString() );
+
+			// see which stream to start reading from 
+			if (this.Position < _stream1.Length) // Start in stream 1
+			{				
+				if (count > _stream1.Length)
+				{
+					// will have to read over the boundry of the two streams
+					// So read all of stream1 
+					bytesRead = _stream1.Read(buffer, offset, (int)_stream1.Length);
+					this.Position += bytesRead;
+					bytesToReadFromS2 =  count - bytesRead;
+				}
+				else
+				{
+					// will Not have to read over the boundry of the two streams
+					// So read all of count from stream1 and return 
+					bytesRead = _stream1.Read(buffer, offset, count);
+					this.Position += bytesRead;
+					return bytesRead;
+				}
+				
+				// At this point we have read stream1 completly and will read the remainder
+				// of count from stream2
+				bytesRead += _stream2.Read(buffer, offset + bytesRead, bytesToReadFromS2);
+				this.Position += bytesRead;
+				return bytesRead;
+			}
+
+			// Concat position was located in stream2 so read from stream two and return
+			// Read all of stream two and return 
+			bytesRead = _stream2.Read(buffer, offset, count);
+			this.Position += bytesRead;
+			return bytesRead;
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			int bytesToWriteToS2 = 0;
+			int offsetForS2 = 0;
+			//
+			if (this.Position < _stream1.Length) // Then start writing in stream1
+			{
+				if (count > _stream1.Length) //  see if you end of stream1 will be reached
+				{
+					// only write to end of stream1 then continue with stream2
+					Console.WriteLine("1 Writing "+ _stream1.Length.ToString() + "bytes to stream1");
+					_stream1.Write(buffer, offset, (int)_stream1.Length);
+					this.Position += (int)_stream1.Length;
+					bytesToWriteToS2 = count - (int)_stream1.Length;
+					offsetForS2 = offset + (int)_stream1.Length;
+					
+					//if(LengthSupport)// does extending the length require LengthSupport?
+					//{
+						
+					//}
+					//else
+					//{
+					try
+					{
+						Console.WriteLine("1Writing "+ bytesToWriteToS2.ToString() + "bytes to stream2");
+						_stream2.Write(buffer,offsetForS2,bytesToWriteToS2);
+						this.Position += bytesToWriteToS2;
+						return;
+					}
+					catch(NotSupportedException)
+					{
+						throw new NotSupportedException("Concat stream is not expandable");						
+					}
+				}
+				else // end of stream1 will not be reached
+				{
+					Console.WriteLine("2Writing "+ count.ToString() + "bytes to stream1");
+					_stream1.Write(buffer,offset,count);
+					this.Position += count;					
+				}
+			}
+			else // Start writing in stream2
+			{
+				if(CanSeek)// seeking in stream2 requires LengthSupport
+				{
+						_stream2.Position = this.Position - (int)_stream1.Length;
+						try
+						{
+							Console.WriteLine("3Writing "+ count.ToString() + "bytes to stream2");
+							_stream2.Write(buffer,offset,count);
+							this.Position += count;
+						}
+						catch(NotSupportedException)
+						{
+							throw new NotSupportedException("Concat stream is not expandable");				
+						}
+				}
+				else
+				{
+					// check to see if at exact position in stream2
+					if(this.Position == _stream1.Length + _stream2.Position) // off by one ? 
+					{
+						try
+						{
+							_stream2.Write(buffer,offset,count);
+							this.Position += count;
+						}
+						catch(NotSupportedException)
+						{
+							throw new NotSupportedException("Concat stream is not expandable");				
+						}
+					}
+					else
+					{
+						throw new NotSupportedException("Cannot write because Seek is not supported");
+					}
+				}
+			}
 		}
 
 		//////////////////
 		//Utility Methods
-
+		// Should all be private in production
+		// public for testing
+		
 		// Sets the capabilities of the concat stream to 
 		// the lesser capabilities of the combined streams
 		public void SetProperties(Stream first, Stream second)

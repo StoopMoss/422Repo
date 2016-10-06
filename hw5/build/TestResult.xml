@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="/home/conner/Documents/422/422Repo/hw5/build/Hw_5_tests.dll" total="20" errors="1" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2016-10-06" time="11:28:34">
+  <environment nunit-version="2.6.4.0" clr-version="4.0.30319.17020" os-version="Unix 4.4.0.21" platform="Unix" cwd="/home/conner/Documents/422/422Repo/hw5" machine-name="Allen" user="conner" user-domain="Allen" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="Assembly" name="/home/conner/Documents/422/422Repo/hw5/build/Hw_5_tests.dll" executed="True" result="Failure" success="False" time="0.049" asserts="0">
+    <results>
+      <test-suite type="Namespace" name="hw5Tests" executed="True" result="Failure" success="False" time="0.048" asserts="0">
+        <results>
+          <test-suite type="TestFixture" name="ConcatStreamTests" executed="True" result="Failure" success="False" time="0.030" asserts="0">
+            <results>
+              <test-case name="hw5Tests.ConcatStreamTests.AttemptToReadMoreBytesThanAvailableFromConcatStream" executed="True" result="Success" success="True" time="0.000" asserts="8" />
+              <test-case name="hw5Tests.ConcatStreamTests.FirstConstructorSetPositionToZeroWhenFirstStreamPositionIsNotZero" executed="True" result="Success" success="True" time="0.000" asserts="5" />
+              <test-case name="hw5Tests.ConcatStreamTests.FirstConstructorStreamWithNoLengthForFirstStream" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+              <test-case name="hw5Tests.ConcatStreamTests.FirstConstructorStreamWithNoLengthForSecondStream" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+              <test-case name="hw5Tests.ConcatStreamTests.FirstConstructorWithNoSeekAsFirstStream" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+              <test-case name="hw5Tests.ConcatStreamTests.FirstConstructorWithNoSeekAsSecondStream" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+              <test-case name="hw5Tests.ConcatStreamTests.FirstConstructorWithTwoMemoryStreams" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+              <test-case name="hw5Tests.ConcatStreamTests.ReadAllBytesFromConcatStream" executed="True" result="Success" success="True" time="0.000" asserts="8" />
+              <test-case name="hw5Tests.ConcatStreamTests.ReadFromFirstStreamOnly" executed="True" result="Success" success="True" time="0.000" asserts="5" />
+              <test-case name="hw5Tests.ConcatStreamTests.ReadFromSecondStreamOnly" executed="True" result="Success" success="True" time="0.000" asserts="4" />
+              <test-case name="hw5Tests.ConcatStreamTests.SecondConstructorSetPositionToZeroWhenFirstStreamPositionIsNotZero" executed="True" result="Success" success="True" time="0.000" asserts="6" />
+              <test-case name="hw5Tests.ConcatStreamTests.SecondConstructorWithLengthParameterThatIsLessThanFirstStreamLength" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+              <test-case name="hw5Tests.ConcatStreamTests.SecondConstructorWithNoSeekStreamAsFirstParameter" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+              <test-case name="hw5Tests.ConcatStreamTests.SecondConstructorWithNoSeekStreamAsSecondParameter" executed="True" result="Success" success="True" time="0.000" asserts="5" />
+              <test-case name="hw5Tests.ConcatStreamTests.WritePastEndOfCurrentStreamShouldExpandStreamTwoOfConcatStream" executed="True" result="Error" success="False" time="0.000" asserts="0">
+                <failure>
+                  <message><![CDATA[System.NotSupportedException : Concat stream is not expandable]]></message>
+                  <stack-trace><![CDATA[at CS422.ConcatStream.Write (System.Byte[] buffer, Int32 offset, Int32 count) <0x41ded490 + 0x00287> in <filename unknown>:0
+at hw5Tests.ConcatStreamTests.WritePastEndOfCurrentStreamShouldExpandStreamTwoOfConcatStream () <0x41ded1c0 + 0x00162> in <filename unknown>:0
+]]></stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="NoSeekMemoryStreamTests" executed="True" result="Success" success="True" time="0.011" asserts="0">
+            <results>
+              <test-case name="hw5Tests.NoSeekMemoryStreamTests.CanSeekPropertyShouldReturnFalse" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+              <test-case name="hw5Tests.NoSeekMemoryStreamTests.ConstructorOne" executed="True" result="Success" success="True" time="0.000" asserts="5" />
+              <test-case name="hw5Tests.NoSeekMemoryStreamTests.ConstructorTwo" executed="True" result="Success" success="True" time="0.000" asserts="5" />
+              <test-case name="hw5Tests.NoSeekMemoryStreamTests.LengthPropertyShouldThrowNotSupportedException" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+              <test-case name="hw5Tests.NoSeekMemoryStreamTests.SeekShouldThrowNotSupportedException" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

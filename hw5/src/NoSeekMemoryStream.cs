@@ -9,12 +9,22 @@ namespace CS422
 {
     public class NoSeekMemoryStream : MemoryStream
     {        
-        private bool _canSeek;        
-        
         //Properties
         public override bool  CanSeek
         {
             get {return false;}
+        }
+
+        public override long Position
+        {
+            get {
+              throw new NotSupportedException(
+                  "Seeking not supported so Position is not supported");
+            }
+            set {
+                throw new NotSupportedException(
+                    "Seeking not supported so Position is not supported");
+            }
         }
 
         public override long  Length
