@@ -17,8 +17,8 @@ namespace CS422
 		private bool _usedFirstConstructor;
 		private bool _usedSecondConstructor;
 
-		private MemoryStream _stream1;
-		private MemoryStream _stream2;
+		private Stream _stream1;
+		private Stream _stream2;
 
 
 		////////////
@@ -112,11 +112,8 @@ namespace CS422
 			_usedFirstConstructor = true;
 			Position = 0;
 
-			//Concat streams
-			// _stream1 = new MemoryStream();
-			// first.CopyTo( _stream);
-			// second.CopyTo(_stream);
-			//Length = _stream.Length;
+			_stream1 = first;
+			_stream2 = second;
 												
 		}
 
@@ -144,14 +141,6 @@ namespace CS422
 			_length = fixedLength;			
 			_usedSecondConstructor = true;
 			Position = 0;
-
-			//Concat streams
-			// _stream1 = new MemoryStream();
-			// first.CopyTo( _stream);
-			// second.CopyTo(_stream);
-			// //Length = fixedLength;
-			
-				
 		}
 
 	
