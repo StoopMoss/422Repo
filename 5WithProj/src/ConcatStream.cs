@@ -50,13 +50,6 @@ namespace CS422
 		public override bool CanSeek
 		{
 			get{ return _canSeek;}
-
-		}
-		
-		//for testing... 
-		public bool SetSeek
-		{
-			set{_canSeek = value;}
 		}
 
 		public override bool CanRead
@@ -81,19 +74,6 @@ namespace CS422
 		{
 			get { return _lengthSupport;} 
 			set { _lengthSupport = value;} 
-		}
-
-		// Expose streams for testing
-		public Stream FirstStream
-		{
-			get { return _stream1;} 
-			set { _stream1 = value;}
-		}
-
-		public Stream SecondStream
-		{
-			get { return _stream2;} 
-			set { _stream2 = value;}
 		}
 
 
@@ -205,8 +185,7 @@ namespace CS422
 			int bytesToReadFromS2 = 0;
 
 			Console.WriteLine("In Read: Position = " + Position.ToString() );
-			Console.WriteLine("In Read:_stream1.length = " + _stream1.Length.ToString() );
-			Console.WriteLine("In Read: count = " + count.ToString() );
+
 			// see which stream to start reading from 
 			if (this.Position < _stream1.Length) // Start in stream 1
 			{				
@@ -214,7 +193,6 @@ namespace CS422
 				{
 					// will have to read over the boundry of the two streams
 					// So read all of stream1 
-					Console.WriteLine("Read 1 ");		
 					bytesRead = _stream1.Read(buffer, offset, (int)_stream1.Length);
 					this.Position += bytesRead;
 					bytesToReadFromS2 =  count - bytesRead;
@@ -222,8 +200,7 @@ namespace CS422
 				else
 				{
 					// will Not have to read over the boundry of the two streams
-					// So read all of count from stream1 and return
-					Console.WriteLine("Read 2 "); 
+					// So read all of count from stream1 and return 
 					bytesRead = _stream1.Read(buffer, offset, count);
 					this.Position += bytesRead;
 					return bytesRead;
@@ -231,18 +208,13 @@ namespace CS422
 				
 				// At this point we have read stream1 completly and will read the remainder
 				// of count from stream2
-				Console.WriteLine("Read 3 ");
-				Console.WriteLine("offset: " + offset);
-				Console.WriteLine("bytesRead: " + bytesRead);
-				Console.WriteLine("bytesToReadFromS2: " + bytesToReadFromS2);
 				bytesRead += _stream2.Read(buffer, offset + bytesRead, bytesToReadFromS2);
 				this.Position += bytesRead;
 				return bytesRead;
 			}
 
 			// Concat position was located in stream2 so read from stream two and return
-			// Read all of stream two and return
-			Console.WriteLine("Read 4 "); 
+			// Read all of stream two and return 
 			bytesRead = _stream2.Read(buffer, offset, count);
 			this.Position += bytesRead;
 			return bytesRead;
@@ -302,7 +274,6 @@ namespace CS422
 				else
 				{
 					// check to see if at exact position in stream2
-					Console.WriteLine("Write: Position = " + this.Position +"");
 					if(this.Position == _stream1.Length + _stream2.Position) // off by one ? 
 					{
 						try

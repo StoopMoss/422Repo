@@ -321,10 +321,13 @@ namespace hw5Tests
 
 			// Act
 			Assert.Throws<NotSupportedException>(() => streamToTest.Write(bufferToWrite, 0, bufferToWrite.Length));
-		}
 
+			// streamToTest.Write(bufferToWrite, 0, bufferToWrite.Length)
+
+		}
+		
 		[Test]
-		public void ReadBackStreamDataInRandomChunks()
+		public void WriteOverMiddleBoundryOfBothStreamsWithSeekEnabled()
 		{
 			// Arrange
 			byte[] result = new byte[1046];
@@ -339,79 +342,42 @@ namespace hw5Tests
 			// Act
 			streamToTest.Write(bufferToWrite, 0, bufferToWrite.Length);
 			streamToTest.Position = 0;
-			streamToTest.FirstStream.Position = 0;
-			streamToTest.SecondStream.Position = 0;
-			int bytesRead = streamToTest.Read(result, 0, bufferToWrite.Length);
-
-			Console.WriteLine("bytesRead " + bytesRead);
+			streamToTest.Read(result, 0, bufferToWrite.Length);
 
 			for (int i = 0; i < bufferToWrite.Length; i++)
 			{
+				Console.WriteLine("Position " + streamToTest.Position);
 				Console.WriteLine("result[i]: " + result[i]);
 				Assert.AreEqual(bufferToWrite[i], result[i]);
 			}
 		
 		}
 
-		
-		// [Test]
-		// public void WriteOverMiddleBoundryOfBothStreamsWithSeekEnabled()
-		// {
-		// 	// Arrange
-		// 	byte[] result = new byte[1046];
-		// 	byte[] buffer1 = Encoding.ASCII.GetBytes("123");
-		// 	byte[] buffer2 = Encoding.ASCII.GetBytes("456");
-		// 	byte[] bufferToWrite = Encoding.ASCII.GetBytes("abcdef");
+		[Test]
+		public void WriteOverMiddleBoundryOfBothStreamsWithSeekDisabled()
+		{
+				// Arrange
+			byte[] result = new byte[1046];
+			byte[] buffer1 = Encoding.ASCII.GetBytes("123");
+			byte[] buffer2 = Encoding.ASCII.GetBytes("456");
+			byte[] bufferToWrite = Encoding.ASCII.GetBytes("abcdef");
 
-		// 	MemoryStream stream1 = new MemoryStream(buffer1);			
-		// 	MemoryStream stream2 = new MemoryStream(buffer2);
-		// 	ConcatStream streamToTest = new ConcatStream(stream1, stream2);
+			MemoryStream stream1 = new MemoryStream(buffer1);			
+			MemoryStream stream2 = new MemoryStream(buffer2);
+			ConcatStream streamToTest = new ConcatStream(stream1, stream2);
 
-		// 	// Act
-		// 	streamToTest.Write(bufferToWrite, 0, bufferToWrite.Length);
-		// 	streamToTest.Position = 0;
-		// 	streamToTest.FirstStream.Position = 0;
-		// 	streamToTest.SecondStream.Position = 0;
-		// 	int bytesRead = streamToTest.Read(result, 0, bufferToWrite.Length);
+			// Act
+			streamToTest.Write(bufferToWrite, 0, bufferToWrite.Length);
 
-		// 	Console.WriteLine("bytesRead " + bytesRead);
+			//Assert
+			string actual = streamToTest.ToString();
+			Assert.IsFalse(streamToTest.CanSeek);			
 
-		// 	for (int i = 0; i < bufferToWrite.Length; i++)
-		// 	{
-		// 		Console.WriteLine("result[i]: " + result[i]);
-		// 		Assert.AreEqual(bufferToWrite[i], result[i]);
-		// 	}
-		
-		// }
-
-		// [Test]
-		// public void WriteOverMiddleBoundryOfBothStreamsWithSeekDisabled()
-		// {
-		// 		// Arrange
-		// 	byte[] result = new byte[1046];
-		// 	byte[] buffer1 = Encoding.ASCII.GetBytes("123");
-		// 	byte[] buffer2 = Encoding.ASCII.GetBytes("456");
-		// 	byte[] bufferToWrite = Encoding.ASCII.GetBytes("abcdef");
-
-		// 	MemoryStream stream1 = new MemoryStream(buffer1);			
-		// 	MemoryStream stream2 = new MemoryStream(buffer2);
-		// 	ConcatStream streamToTest = new ConcatStream(stream1, stream2);
-
-		// 	// Act
-		// 	streamToTest.Position = 5;			
-		// 	streamToTest.SetSeek = false;
-		// 	Assert.IsFalse(streamToTest.CanSeek);			
-		// 	streamToTest.Write(bufferToWrite, 0, 2);
-		// 	streamToTest.SecondStream.Position = 2;
-		// 	int bytesRead = streamToTest.Read(result, 0, 2);
-
-		// 	//Assert
-
-		// 	for (int i = 0; i < 2; i++)
-		// 	{
-		// 		Assert.AreEqual(result[i + 3], bufferToWrite[i]);				
-		// 	}
-		// }
+			for (int i = 0; i < bufferToWrite.Length; i++)
+			{
+				Assert.AreEqual(actual[i], bufferToWrite[i]);				
+			}
+		}
 
 
 

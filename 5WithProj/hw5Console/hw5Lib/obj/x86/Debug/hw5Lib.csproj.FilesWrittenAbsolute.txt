@@ -1,0 +1,1 @@
+/home/conner/Documents/422/422Repo/5WithProj/hw5Console/hw5Lib/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
