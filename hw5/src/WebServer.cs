@@ -3,64 +3,82 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.IO;
+using System.Threading;
+using System.Collections.Concurrent;
 
 namespace CS422
 {
 	public class WebServer
 	{	
 		//private readonly byte validatorLock;
+    private static Thread[] _threadPool;
+    private static BlockingCollection<byte> _collection;
+    private static bool _disposeThreads;
+    private static int _threadCount;
 
 		public WebServer ()
 		{}
+
+    
 
 		public static bool Start(int port, int numberOfThreads)
 		{	
 			bool active = true;
 						
-			if (numberOfThreads <= 0)
-			{
-				numberOfThreads = 64;
-			}
-			
+      // Set and store thread Count
+			_threadCount = numberOfThreads <= 0 ?  64 : numberOfThreads;			
+
 			// Set TCP 
+			Console.WriteLine ("starting TCPListener");
 			TcpListener listener = new TcpListener(IPAddress.Any, port);
 			listener.Start();
-			Console.WriteLine ("started TCPListener");
 
-			while (active) 
+      // Create and start all threads
+      int i = 0;
+      _threadPool = new Thread[_threadCount];
+			for (i = 0; i < _threadCount; i++)
+			{
+				//_threadPool [i] = new Thread (() => ConcurrentlyProcessTcpClient);
+        _threadPool [i] = new Thread (new ThreadStart (ConcurrentlyProcessTcpClient));
+			}
+
+      i = 0;
+			while (i < _threadCount) 
 			{			
-				/*
-				• Accept	new	TCP	socket	connection
-				• Get a	thread	from	the	thread	pool	and	pass	it	the	TCP	socket
-				• Repeat
-				*/
+				//• Accept	new	TCP	socket	connection
 				TcpClient client = new TcpClient();
 				client = listener.AcceptTcpClient();
-				
 
-				// read and validate what was read				
-				WebRequest request = BuildRequest(client);
-				
-				// if (active)
-				// {
-				// 	Console.WriteLine("about to Write");
-				// 	WriteResponseToClient (networkStream, Validator);
-				// }
-				// else 
-				// {
-				// 	// read failed, close connection
-				// 	networkStream.Dispose();
-				// 	//client.Close();
-				// 	return active;
-				// }
-				// networkStream.Dispose();
+				//• Get a	thread	from	the	thread	pool	and	pass	it	the	TCP	socket
+				_threadPool [i].Start (client);
+        
+				//• Repeat
+        i++;
 			}
+
+      
+      // TODO: join threads....
+      for (i = 0; i < _threadCount; i++)
+			{
+        _threadPool[i].Join();
+      }
+
+      //cleanup listene...
+
 			return true;			
 		}
+
 
 		// 
 		// Request methods
 		//
+    //
+    public static void ConcurrentlyProcessTcpClient(TcpClient client)
+    {
+			  WebRequest request = BuildRequest(client);
+        // 
+    }
+
 		// Reads from network stream and validates as it goes
 		public static bool ReadFromClientNetworkStream(TcpClient client)
 		{
@@ -150,6 +168,8 @@ namespace CS422
 
 			return false;
 		}
+
+   
 
 	}
 }

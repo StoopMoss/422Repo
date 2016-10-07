@@ -5,6 +5,7 @@ namespace CS422
 {
 	public class Validator
 	{
+    private WebRequest _webRequest;
 		private byte[] _buffer;
 		private string _URL;
 
@@ -26,18 +27,20 @@ namespace CS422
 			get{return _URL;}
 			set{_URL = value;}
 		}
-
 		public byte[] Buffer
 		{
 			get{return _buffer;}
 			set{_buffer = value;}
 		}
-
 		public bool FullRequest
 		{
 			get{return _fullRequest;}
 			//set{_fullRequest = value;}
 		}
+    public WebRequest GetRequest
+    {
+      get{return _webRequest;}      
+    }
 
 		/////////////
 		//Methods

@@ -7,15 +7,50 @@ namespace CS422
 {
 	public class WebRequest
 	{
-		private string _requestMethod;
-		private string _requestURI;
-		private string _requestHTTPVersion;
-		private Dictionary<string, string> _requestHeaders;
-		private ConcatStream _requestBody;
+		private string _method;
+		private string _uri;
+		private string _httpVersion;
+		private Dictionary<string, string> _headers;
+		private ConcatStream _body;
 		private NetworkStream _networkStream;
-
+		
 		private int _studentId = 11282717;
 
+    //////////////
+    //Properties
+    public string Method
+    {
+      get{return _method;}
+      set{_method = value;}
+    }
+		public string URI
+    {
+      get{return _uri;}
+      set{ _uri = value;}
+    }
+		public string HTTPVersion
+    {
+      get{return _httpVersion;}
+      set{_httpVersion = value;}
+    }
+		public Dictionary<string, string> Headers
+    {
+      get{return _headers;}
+      set{_headers = value;}
+    }
+		public ConcatStream Body
+		{
+      get{return _body;}
+      set{_body = value;}
+    }
+    public NetworkStream StreamRef
+		{
+      get{return _networkStream;}
+      set{_networkStream = value;}
+    }
+    
+
+    //Constructor
 		public WebRequest ()
 		{
 		}
@@ -26,37 +61,45 @@ namespace CS422
 		public void WriteNotFoundResponse(string pageHTML)
 		{
 			// generate HTTP response 
-			string HTTPResponseTemplate = GetHTMLResponseTemplate(404);
+			string HtmlResponseTemplate = GetHtmlResponseTemplate(404);
 
 			//Write to stream
-			WriteToNetworkStream(HTTPResponseTemplate);
+			WriteToNetworkStream(HtmlResponseTemplate);
 		}
 
 		public bool WriteHTMLResponse(string htmlString)
 		{
 			// generate HTTP response 
-			string HTTPResponseTemplate = GetHTMLResponseTemplate(200);
-
+			string HtmlResponseTemplate = GetHtmlResponseTemplate(200);
+			string HtmlResponse = FormatResponseTemplate(HtmlResponseTemplate);
 			//Write to stream
-			bool successfulWrite = WriteToNetworkStream(HTTPResponseTemplate);
+			bool successfulWrite = WriteToNetworkStream(HtmlResponseTemplate);
 			return successfulWrite;
 		}
 
 
-		public bool WriteToNetworkStream(string HTTPResponseTemplate)
+		public string FormatResponseTemplate(string template)
 		{
-			string response = string.Format(HTTPResponseTemplate, _studentId, DateTime.Now);
+			string response = string.Format(template, _studentId, DateTime.Now);
 
+      throw new NotImplementedException();
+      //return response;
+		}
+
+
+
+		public bool WriteToNetworkStream(string htmlResponse)
+		{
 			if (_networkStream.CanWrite)
 			{
-				byte[] buffer = Encoding.ASCII.GetBytes(response);
+				byte[] buffer = Encoding.ASCII.GetBytes(htmlResponse);
 				_networkStream.Write(buffer, 0, buffer.Length);
 				return true;
 			}
 			throw new Exception("Network stream was unwriteable");				
 		}
 
-		public string GetHTMLResponseTemplate(int statusCode)
+		public string GetHtmlResponseTemplate(int statusCode)
 		{
 			switch(statusCode)
 			{
