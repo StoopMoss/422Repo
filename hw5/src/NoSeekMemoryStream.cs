@@ -32,7 +32,7 @@ namespace CS422
             get 
             {
                 throw new NotSupportedException(
-                    "NoSeekMemoryStream: LengthNotSupported");
+                   "NoSeekMemoryStream: LengthNotSupported");
             }          
         }
 

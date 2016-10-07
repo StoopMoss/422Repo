@@ -216,6 +216,33 @@ namespace hw5Tests
 		}
 
 		[Test]
+		public void ReadAllBytesFromConcatStreamThatHasNoSeekAsSecondStream()
+		{
+			// Arrange
+			byte[] buffer = new byte[1046];
+			byte[] buffer1 = Encoding.ASCII.GetBytes("123");
+			byte[] buffer2 = Encoding.ASCII.GetBytes("456");
+			byte[] expectedBuffer = Encoding.ASCII.GetBytes("123456");;			
+			
+			MemoryStream stream1 = new MemoryStream(buffer1);			
+			NoSeekMemoryStream stream2 = new NoSeekMemoryStream(buffer2);
+			ConcatStream streamToTest = new ConcatStream(stream1, stream2);			
+
+			// Act
+			int numberOfBytesRead = streamToTest.Read(buffer, 0,  expectedBuffer.Length);
+
+			//Assert
+			Assert.IsFalse(streamToTest.CanSeek);
+			Assert.AreEqual(expectedBuffer.Length, numberOfBytesRead);
+
+			for (int i = 0; i < expectedBuffer.Length; i++)
+			{
+				Assert.AreEqual(expectedBuffer[i], buffer[i]);				
+			}
+
+		}
+
+		[Test]
 		public void AttemptToReadMoreBytesThanAvailableFromConcatStream()
 		{
 			// Arrange
@@ -231,7 +258,7 @@ namespace hw5Tests
 			ConcatStream streamToTest = new ConcatStream(stream1, stream2);
 
 			// Act
-			int numberOfBytesRead = streamToTest.Read(buffer, 0, expectedBuffer.Length);
+			int numberOfBytesRead = streamToTest.Read(buffer, 0, expectedBuffer.Length + 100);
 
 			//Assert
 			Assert.IsTrue(streamToTest.CanSeek);
@@ -330,90 +357,146 @@ namespace hw5Tests
 			byte[] result = new byte[1046];
 			byte[] buffer1 = Encoding.ASCII.GetBytes("123");
 			byte[] buffer2 = Encoding.ASCII.GetBytes("456");
-			byte[] bufferToWrite = Encoding.ASCII.GetBytes("abcdef");
+			byte[] expected = Encoding.ASCII.GetBytes("123456");
 
 			MemoryStream stream1 = new MemoryStream(buffer1);			
 			MemoryStream stream2 = new MemoryStream(buffer2);
 			ConcatStream streamToTest = new ConcatStream(stream1, stream2);
 
+			Random random = new Random();
+			int bytesRead  = 0;
+			int bytesToRead = 0;
+			int totalBytesLeft = (int) (stream1.Length + stream2.Length);
+			int i = 0;
+			int offset = 0;
+
 			// Act
-			streamToTest.Write(bufferToWrite, 0, bufferToWrite.Length);
-			streamToTest.Position = 0;
-			streamToTest.FirstStream.Position = 0;
-			streamToTest.SecondStream.Position = 0;
-			int bytesRead = streamToTest.Read(result, 0, bufferToWrite.Length);
-
-			Console.WriteLine("bytesRead " + bytesRead);
-
-			for (int i = 0; i < bufferToWrite.Length; i++)
+			while (totalBytesLeft != 0 )
 			{
-				Console.WriteLine("result[i]: " + result[i]);
-				Assert.AreEqual(bufferToWrite[i], result[i]);
+				bytesToRead = random.Next(1, totalBytesLeft);
+				bytesRead = streamToTest.Read(result, offset, bytesToRead);
+				Console.WriteLine("bytesRead " + bytesRead);
+				for (i = 0; i < bytesRead; i++)
+				{
+					Console.WriteLine("expected[i]" + expected[i]);
+					Console.WriteLine("result[i]" + result[i]);
+					Assert.AreEqual(expected[i], result[i]);
+				}
+
+				totalBytesLeft-= bytesRead;
+				offset += bytesRead;
+
+				if(bytesRead == 0)
+				{ break;}
 			}
-		
 		}
 
-		
-		// [Test]
-		// public void WriteOverMiddleBoundryOfBothStreamsWithSeekEnabled()
-		// {
-		// 	// Arrange
-		// 	byte[] result = new byte[1046];
-		// 	byte[] buffer1 = Encoding.ASCII.GetBytes("123");
-		// 	byte[] buffer2 = Encoding.ASCII.GetBytes("456");
-		// 	byte[] bufferToWrite = Encoding.ASCII.GetBytes("abcdef");
+		[Test]
+		public void ReadALotOfBytesFromStream()
+		{
+			byte[] result = new byte[100000];
+			byte[] expected = new byte[100000];
+			byte[] buffer1 = new byte[50000];
+			byte[] buffer2 = new byte[50000];
+			
+			long i = 0;
+			for (i = 0; i < 50000; i++)
+			{
+				buffer1[i] = Convert.ToByte(i % 250);
+				expected[i] =  Convert.ToByte(i % 250);
+				Console.WriteLine("i = " + i);
+			}
+			for (; i < 100000; i++)
+			{
+				buffer2[i] = Convert.ToByte(i% 250);
+				expected[i] =  Convert.ToByte(i% 250);
+				Console.WriteLine("i = " + i);
+			}
 
-		// 	MemoryStream stream1 = new MemoryStream(buffer1);			
-		// 	MemoryStream stream2 = new MemoryStream(buffer2);
-		// 	ConcatStream streamToTest = new ConcatStream(stream1, stream2);
+			MemoryStream stream1 = new MemoryStream(buffer1);			
+			MemoryStream stream2 = new MemoryStream(buffer2);
+			
+			ConcatStream stream = new ConcatStream(stream1, stream2);
 
-		// 	// Act
-		// 	streamToTest.Write(bufferToWrite, 0, bufferToWrite.Length);
-		// 	streamToTest.Position = 0;
-		// 	streamToTest.FirstStream.Position = 0;
-		// 	streamToTest.SecondStream.Position = 0;
-		// 	int bytesRead = streamToTest.Read(result, 0, bufferToWrite.Length);
+			stream.Read(result, 0, 100000);
 
-		// 	Console.WriteLine("bytesRead " + bytesRead);
-
-		// 	for (int i = 0; i < bufferToWrite.Length; i++)
-		// 	{
-		// 		Console.WriteLine("result[i]: " + result[i]);
-		// 		Assert.AreEqual(bufferToWrite[i], result[i]);
-		// 	}
-		
-		// }
-
-		// [Test]
-		// public void WriteOverMiddleBoundryOfBothStreamsWithSeekDisabled()
-		// {
-		// 		// Arrange
-		// 	byte[] result = new byte[1046];
-		// 	byte[] buffer1 = Encoding.ASCII.GetBytes("123");
-		// 	byte[] buffer2 = Encoding.ASCII.GetBytes("456");
-		// 	byte[] bufferToWrite = Encoding.ASCII.GetBytes("abcdef");
-
-		// 	MemoryStream stream1 = new MemoryStream(buffer1);			
-		// 	MemoryStream stream2 = new MemoryStream(buffer2);
-		// 	ConcatStream streamToTest = new ConcatStream(stream1, stream2);
-
-		// 	// Act
-		// 	streamToTest.Position = 5;			
-		// 	streamToTest.SetSeek = false;
-		// 	Assert.IsFalse(streamToTest.CanSeek);			
-		// 	streamToTest.Write(bufferToWrite, 0, 2);
-		// 	streamToTest.SecondStream.Position = 2;
-		// 	int bytesRead = streamToTest.Read(result, 0, 2);
-
-		// 	//Assert
-
-		// 	for (int i = 0; i < 2; i++)
-		// 	{
-		// 		Assert.AreEqual(result[i + 3], bufferToWrite[i]);				
-		// 	}
-		// }
+			Assert.AreEqual(expected, result);
+		}
 
 
+
+		///////////////////////////////////
+		//////////////////////////////////
+		// Property Tests
+		[Test]
+		public void LengthPropertyAllowAccess()
+		{
+			byte[] buffer1 = Encoding.ASCII.GetBytes("123");
+			byte[] buffer2 = Encoding.ASCII.GetBytes("456");
+			byte[] expected = Encoding.ASCII.GetBytes("123456");
+
+			MemoryStream stream1 = new MemoryStream(buffer1);			
+			MemoryStream stream2 = new MemoryStream(buffer2);
+			ConcatStream streamToTest = new ConcatStream(stream1, stream2);
+
+			Assert.NotNull(streamToTest.Length);
+		}
+
+		[Test]
+		public void LengthPropertyThrowException()
+		{
+			byte[] buffer1 = Encoding.ASCII.GetBytes("123");
+			byte[] buffer2 = Encoding.ASCII.GetBytes("456");
+			byte[] expected = Encoding.ASCII.GetBytes("123456");
+
+			MemoryStream stream1 = new MemoryStream(buffer1);			
+			NoSeekMemoryStream stream2 = new NoSeekMemoryStream(buffer2);
+			ConcatStream streamToTest = new ConcatStream(stream1, stream2);
+
+			bool errorWasThrown = false;
+			try
+			{
+				long num = streamToTest.Length;
+			}
+			catch
+			{
+				errorWasThrown = true;
+			}	
+			finally
+			{
+				Assert.IsTrue(errorWasThrown);		
+			}			
+		}
+
+		[Test]
+		public void LengthPropertyAllowAccessWithSecondConstructorAndSeekCapabilities()
+		{
+			byte[] buffer1 = Encoding.ASCII.GetBytes("123");
+			byte[] buffer2 = Encoding.ASCII.GetBytes("456");
+			byte[] expected = Encoding.ASCII.GetBytes("123456");
+
+			MemoryStream stream1 = new MemoryStream(buffer1);			
+			MemoryStream stream2 = new MemoryStream(buffer2);
+			ConcatStream streamToTest = new ConcatStream(stream1, stream2, stream1.Length + stream2.Length);
+
+			Assert.NotNull(streamToTest.Length);
+		}
+
+
+		[Test]
+		public void LengthPropertyAllowAccessWithSecondConstructorAndNoSeekCapabilities()
+		{
+			byte[] buffer1 = Encoding.ASCII.GetBytes("123");
+			byte[] buffer2 = Encoding.ASCII.GetBytes("456");
+			byte[] expected = Encoding.ASCII.GetBytes("123456");
+
+			MemoryStream stream1 = new MemoryStream(buffer1);			
+			NoSeekMemoryStream stream2 = new NoSeekMemoryStream(buffer2);
+			ConcatStream streamToTest = new ConcatStream(stream1, stream2, 6);
+
+			Assert.NotNull(streamToTest.Length);
+			Assert.AreEqual(6, streamToTest.Length);
+		}
 
 
 

@@ -1,0 +1,11 @@
+Grade: ?/10
+Comments:
+OK: Found type CS422.ConcatStream
+OK: Found type CS422.NoSeekMemoryStream
+Success: Stream length is positive and seek to beginning ok
+Failure: Failed to read exactly 706619 bytes from stream of length 706619 bytes
+Success: Verifed that stream passed to seek/read/write test function returns true for CanSeek, CanRead, and CanWrite.
+Failure: Stream length went from 706619 to 706619 after writing 10000000 bytes.
+
+
+/////////////////////////////////////////////////////

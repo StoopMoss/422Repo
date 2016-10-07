@@ -78,5 +78,15 @@ namespace hw5Tests
             
             Assert.That(()=> _stream.Length, Throws.Exception );
         }
+
+        [Test]
+        public void PositionPropertySetShouldThrowNotSupportedException()
+        {
+            byte[] _byteArray = Encoding.ASCII.GetBytes("Stream string");
+            NoSeekMemoryStream _stream = new NoSeekMemoryStream(_byteArray);
+            
+            Assert.That(()=> _stream.Position = 4, Throws.Exception );
+        }
+
     }
 }
