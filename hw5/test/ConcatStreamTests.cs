@@ -335,19 +335,27 @@ namespace hw5Tests
 		}
 
 		[Test]
-		public void WritePastEndOfCurrentStreamShouldThrowException()
+		public void WritePastEndOfConcatStreamShouldExpandStream()
 		{
 			// Arrange
-			byte[] buffer1 = Encoding.ASCII.GetBytes("123");
-			byte[] buffer2 = Encoding.ASCII.GetBytes("456");
-			byte[] bufferToWrite = Encoding.ASCII.GetBytes("123456789");
-
-			MemoryStream stream1 = new MemoryStream(buffer1);			
-			MemoryStream stream2 = new MemoryStream(buffer2);
+      byte[] result = new byte[100];
+			byte[] bufferToWrite = Encoding.ASCII.GetBytes("12345");
+			MemoryStream stream1 = new MemoryStream();			
+			MemoryStream stream2 = new MemoryStream();
 			ConcatStream streamToTest = new ConcatStream(stream1, stream2);
 
 			// Act
-			Assert.Throws<NotSupportedException>(() => streamToTest.Write(bufferToWrite, 0, bufferToWrite.Length));
+      streamToTest.Write(bufferToWrite, 0, bufferToWrite.Length);
+      streamToTest.Position = 0;
+
+      int bytesRead = streamToTest.Read(result,0, bufferToWrite.Length);
+      
+			//Assert
+      Assert.AreEqual(bufferToWrite.Length, bytesRead);
+      for (int i = 0; i < bufferToWrite.Length; i++)
+			{
+				Assert.AreEqual(bufferToWrite[i], result[i]);				
+			}
 		}
 
 		[Test]
@@ -392,37 +400,49 @@ namespace hw5Tests
 		}
 
 		[Test]
-		[Ignore]
-		public void ReadALotOfBytesFromStream()
-		{
-			// byte[] result = new byte[100000];
-			// byte[] expected = new byte[100000];
-			// byte[] buffer1 = new byte[50000];
-			// byte[] buffer2 = new byte[50000];
-			
-			// long i = 0;
-			// for (i = 0; i < 50000; i++)
-			// {
-			// 	buffer1[i] = Convert.ToByte(i % 250);
-			// 	expected[i] =  Convert.ToByte(i % 250);
-			// 	Console.WriteLine("i = " + i);
-			// }
-			// for (; i < 100000; i++)
-			// {
-			// 	buffer2[i] = Convert.ToByte(i% 250);
-			// 	expected[i] =  Convert.ToByte(i% 250);
-			// 	Console.WriteLine("i = " + i);
-			// }
+		public void AttemptToReadPastEndStreamShouldOnlyReadToEndOfStream()
+		{	
+      byte[] result = new byte[100];
+			byte[] bufferToWrite = Encoding.ASCII.GetBytes("12345");
+			MemoryStream stream1 = new MemoryStream();			
+			MemoryStream stream2 = new MemoryStream();
+			ConcatStream streamToTest = new ConcatStream(stream1, stream2);
 
-			// MemoryStream stream1 = new MemoryStream(buffer1);			
-			// MemoryStream stream2 = new MemoryStream(buffer2);
-			
-			// ConcatStream stream = new ConcatStream(stream1, stream2);
+			// Act
+      streamToTest.Write(bufferToWrite, 0, bufferToWrite.Length);
+      streamToTest.Position = 0;
 
-			// stream.Read(result, 0, 100000);
+      int bytesRead = streamToTest.Read(result,0, bufferToWrite.Length + 5);
+      
+			//Assert
+      Assert.AreEqual(bufferToWrite.Length, bytesRead);
+      for (int i = 0; i < bufferToWrite.Length; i++)
+			{
+				Assert.AreEqual(bufferToWrite[i], result[i]);				
+			}
+      Assert.AreEqual(bufferToWrite.Length, streamToTest.Position);
+		}
 
-			// Assert.AreEqual(expected, result);
-			Assert.Fail();
+    [Test]
+		public void AttemptToReadPastEndOfNoSeekStreamShouldOnlyReadToEndOfStream()
+		{	
+      byte[] result = new byte[100];
+			byte[] buffer = Encoding.ASCII.GetBytes("12345");
+      byte[] expected = Encoding.ASCII.GetBytes("1234512345");
+			MemoryStream stream1 = new MemoryStream(buffer);			
+			NoSeekMemoryStream stream2 = new NoSeekMemoryStream(buffer);
+			ConcatStream streamToTest = new ConcatStream(stream1, stream2);
+
+			// Act
+      int bytesRead = streamToTest.Read(result,0, expected.Length + 5);
+      
+			//Assert
+      Assert.AreEqual(expected.Length, bytesRead);
+      for (int i = 0; i < expected.Length; i++)
+			{
+				Assert.AreEqual(expected[i], result[i]);				
+			}
+      //Assert.AreEqual(expected.Length, streamToTest.Position);
 		}
 
 
@@ -445,6 +465,7 @@ namespace hw5Tests
 		}
 
 		[Test]
+    [Ignore]
 		public void LengthPropertyThrowException()
 		{
 			byte[] buffer1 = Encoding.ASCII.GetBytes("123");

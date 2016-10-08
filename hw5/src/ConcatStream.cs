@@ -32,7 +32,8 @@ namespace CS422
 
 			set
 			{
-				if (value >= 0 && value <= _length)
+				//if (value >= 0 && value <= _length)
+        if (value >= 0)
 				{
 					_position = value;	
 				}
@@ -40,10 +41,10 @@ namespace CS422
 				{
 					_position = 0;	
 				}
-				else
-				{
-					_position = _length;
-				}
+				// else
+				// {
+				// 	_position = _length;
+				// }
 			}
 		}
 
@@ -137,15 +138,24 @@ namespace CS422
 			// Check first stream's Length Support
 			try
 			{
+        Console.WriteLine("Second Constructor try");
 				firstStreamLength = first.Length;
+        if (first.Length == null)
+        {
+          Console.WriteLine("null");
+          throw new ArgumentException(
+            "ConcatStreamFixedlengthConstructor: no length on first stream");
+        }
 				if (fixedLength < firstStreamLength)
 				{
+          Console.WriteLine("blah");
 					throw new ArgumentException(
 						"fixedLength was less than first stream's length");	
 				}
 			}
 			catch (NotSupportedException)
 			{				
+        Console.WriteLine("Second Constructor catch");
 				throw new ArgumentException();
 			}
 			
@@ -195,17 +205,27 @@ namespace CS422
 			int i = 0;
 			int bytesToReadFromS2 = 0;
 
-			//Console.WriteLine("In Read: Position = " + Position.ToString() );
-			//Console.WriteLine("In Read:_stream1.length = " + _stream1.Length.ToString() );
-			//Console.WriteLine("In Read: count = " + count.ToString() );
+      // if(LengthSupport)
+      // {
+      //   if (count > Length) 
+      //   {
+      //     // Make sure to not read over the stream boundry
+      //     count = (int)Length;
+      //   }
+      // }
+
+			// Console.WriteLine("In Read: Position = " + Position.ToString() );
+			// Console.WriteLine("In Read:_stream1.length = " + _stream1.Length.ToString() );
+			// Console.WriteLine("In Read: count = " + count.ToString() );
 			// see which stream to start reading from 
 			if (this.Position < _stream1.Length) // Start in stream 1
 			{				
+        Console.WriteLine("In Read: first if");
 				if (count > _stream1.Length)
 				{
 					// will have to read over the boundry of the two streams
 					// So read all of stream1 
-					//Console.WriteLine("Read 1 ");		
+				  Console.WriteLine("Read 1 ");		
 					bytesRead = _stream1.Read(buffer, offset, (int)_stream1.Length);
 					this.Position += bytesRead;
 					bytesToReadFromS2 =  count - bytesRead;
@@ -214,7 +234,7 @@ namespace CS422
 				{
 					// will Not have to read over the boundry of the two streams
 					// So read all of count from stream1 and return
-					//Console.WriteLine("Read 2 "); 
+					Console.WriteLine("Read 2 "); 
 					bytesRead = _stream1.Read(buffer, offset, count);
 					this.Position += bytesRead;
 					return bytesRead;
@@ -222,7 +242,7 @@ namespace CS422
 				
 				// At this point we have read stream1 completly and will read the remainder
 				// of count from stream2
-				// Console.WriteLine("Read 3 ");
+				Console.WriteLine("Read 3 ");
 				// Console.WriteLine("offset: " + offset);
 				// Console.WriteLine("bytesRead: " + bytesRead);
 				// Console.WriteLine("bytesToReadFromS2: " + bytesToReadFromS2);
@@ -231,12 +251,32 @@ namespace CS422
 				return bytesRead;
 			}
 
-			// Concat position was located in stream2 so read from stream two and return
-			// Read all of stream two and return
-			// Console.WriteLine("Read 4 "); 
-			bytesRead = _stream2.Read(buffer, offset, count);
-			this.Position += bytesRead;
-			return bytesRead;
+
+			  // Concat position was located in stream2 so read from stream two and return
+		    // Read all of stream two and return
+      	if(CanSeek)
+				{
+          _stream2.Position = this.Position - (int)_stream1.Length;
+			    bytesRead = _stream2.Read(buffer, offset, count);
+
+          Console.WriteLine("Read 4 bytesRead = " + bytesRead);
+			    this.Position += bytesRead;			    
+				}
+				else
+				{
+					// check to see if at exact position in stream2
+					//Console.WriteLine("Read: Position = " + this.Position +"");
+					if(this.Position == _stream1.Length + _stream2.Position) // off by one ? 
+					{
+						bytesRead = _stream2.Read(buffer,offset,count);
+						this.Position += bytesRead;
+					}
+					else
+					{
+						throw new NotSupportedException("Cannot write because Seek is not supported");
+					}
+				}
+		  return bytesRead;
 		}
 
 		public override void Write(byte[] buffer, int offset, int count)
@@ -249,27 +289,20 @@ namespace CS422
 				if (count > _stream1.Length) //  see if you end of stream1 will be reached
 				{
 					// only write to end of stream1 then continue with stream2
-					//Console.WriteLine("1 Writing "+ _stream1.Length.ToString() + "bytes to stream1");
+					Console.WriteLine("1 Writing "+ _stream1.Length.ToString() + "bytes to stream1");
 					_stream1.Write(buffer, offset, (int)_stream1.Length);
 					this.Position += (int)_stream1.Length;
 					bytesToWriteToS2 = count - (int)_stream1.Length;
 					offsetForS2 = offset + (int)_stream1.Length;
 										
-					try
-					{
-						//Console.WriteLine("2 Writing "+ bytesToWriteToS2.ToString() + "bytes to stream2");
-						_stream2.Write(buffer,offsetForS2,bytesToWriteToS2);
-						this.Position += bytesToWriteToS2;
-						return;
-					}
-					catch(NotSupportedException)
-					{
-						throw new NotSupportedException("Concat stream is not expandable");						
-					}
+				  Console.WriteLine("2 Writing "+ bytesToWriteToS2.ToString() + " bytes to stream2");
+					_stream2.Write(buffer,offsetForS2,bytesToWriteToS2);
+					this.Position += bytesToWriteToS2;
+					return;
 				}
 				else // end of stream1 will not be reached
 				{
-					//Console.WriteLine("3 Writing "+ count.ToString() + "bytes to stream1");
+					Console.WriteLine("3 Writing "+ count.ToString() + " bytes to stream1");
 					_stream1.Write(buffer,offset,count);
 					this.Position += count;					
 				}
@@ -279,16 +312,10 @@ namespace CS422
 				if(CanSeek)// seeking in stream2 requires LengthSupport
 				{
 						_stream2.Position = this.Position - (int)_stream1.Length;
-						try
-						{
-							//Console.WriteLine("4 Writing "+ count.ToString() + "bytes to stream2");
-							_stream2.Write(buffer,offset,count);
-							this.Position += count;
-						}
-						catch(NotSupportedException)
-						{
-							throw new NotSupportedException("Concat stream is not expandable");				
-						}
+						Console.WriteLine("4 Writing "+ count.ToString() + " bytes to stream2");
+						_stream2.Write(buffer,offset,count);
+            Console.WriteLine("Position += "+ count);
+						this.Position += count;
 				}
 				else
 				{
@@ -296,15 +323,8 @@ namespace CS422
 					//Console.WriteLine("Write: Position = " + this.Position +"");
 					if(this.Position == _stream1.Length + _stream2.Position) // off by one ? 
 					{
-						try
-						{
-							_stream2.Write(buffer,offset,count);
-							this.Position += count;
-						}
-						catch(NotSupportedException)
-						{
-							throw new NotSupportedException("Concat stream is not expandable");				
-						}
+						_stream2.Write(buffer,offset,count);
+						this.Position += count;
 					}
 					else
 					{

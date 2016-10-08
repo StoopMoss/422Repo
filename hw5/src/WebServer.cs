@@ -12,32 +12,32 @@ namespace CS422
 	{	
 		//private readonly byte validatorLock;
     private static Thread[] _threadPool;
-    private static BlockingCollection<byte> _collection;
+    private static BlockingCollection<TcpClient> _tcpClientCollection;
     private static bool _disposeThreads;
     private static int _threadCount;
 
 		public WebServer ()
 		{}
 
-    
-
 		public static bool Start(int port, int numberOfThreads)
 		{	
 			bool active = true;
+      _tcpClientCollection = new BlockingCollection<TcpClient>();
 						
       // Set and store thread Count
-			_threadCount = numberOfThreads <= 0 ?  64 : numberOfThreads;			
+			_threadCount = numberOfThreads <= 0 ?  64 : numberOfThreads;
 
 			// Set TCP 
-			Console.WriteLine ("starting TCPListener");
+			Console.WriteLine ("starting TCPListener...");
 			TcpListener listener = new TcpListener(IPAddress.Any, port);
 			listener.Start();
+      Console.WriteLine ("Started ");
 
       // Create and start all threads
       int i = 0;
       _threadPool = new Thread[_threadCount];
 			for (i = 0; i < _threadCount; i++)
-			{
+			{        
 				//_threadPool [i] = new Thread (() => ConcurrentlyProcessTcpClient);
         _threadPool [i] = new Thread (new ThreadStart (ConcurrentlyProcessTcpClient));
 			}
@@ -48,22 +48,24 @@ namespace CS422
 				//• Accept	new	TCP	socket	connection
 				TcpClient client = new TcpClient();
 				client = listener.AcceptTcpClient();
+        _tcpClientCollection.Add(client);
 
 				//• Get a	thread	from	the	thread	pool	and	pass	it	the	TCP	socket
-				_threadPool [i].Start (client);
+				_threadPool [i].Start ();
         
 				//• Repeat
         i++;
 			}
-
       
       // TODO: join threads....
       for (i = 0; i < _threadCount; i++)
 			{
+         //_threadPool[i].RequestStop();
         _threadPool[i].Join();
       }
 
-      //cleanup listene...
+      //cleanup listene..
+      listener.Stop();
 
 			return true;			
 		}
@@ -73,10 +75,22 @@ namespace CS422
 		// Request methods
 		//
     //
-    public static void ConcurrentlyProcessTcpClient(TcpClient client)
+    public static void ConcurrentlyProcessTcpClient()
     {
-			  WebRequest request = BuildRequest(client);
-        // 
+      Console.WriteLine("in ConcurrentlyProcessTcpClient");
+
+      //Get client to process
+      TcpClient client = _tcpClientCollection.Take();
+      Console.WriteLine("Thread Recived client");
+
+      
+      // process client
+		  WebRequest request = BuildRequest(client);
+
+      //Find Service from list
+      //Pass request to Service
+      //Service();
+       
     }
 
 		// Reads from network stream and validates as it goes
@@ -119,6 +133,7 @@ namespace CS422
 
 		private static WebRequest BuildRequest(TcpClient client)
 		{
+      Console.WriteLine("in BuildRequest");
 			// Read from client 			
 			bool requestIsValid = ReadFromClientNetworkStream(client);
 
@@ -139,6 +154,7 @@ namespace CS422
 			else
 			{
 				// return null so caller can dispose of TCP client		
+        Console.WriteLine("Closing client");
 				client.GetStream().Close();
 				client.Close();
 				//client.Dispose();		

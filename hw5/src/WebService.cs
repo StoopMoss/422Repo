@@ -2,7 +2,7 @@
 
 namespace CS422
 {
-	internal abstract class WebService
+	public abstract class WebService
 	{		
 		public abstract void Handler(WebRequest req);
 

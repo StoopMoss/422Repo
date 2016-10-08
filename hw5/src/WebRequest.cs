@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
@@ -11,10 +12,17 @@ namespace CS422
 		private string _uri;
 		private string _httpVersion;
 		private Dictionary<string, string> _headers;
-		private ConcatStream _body;
+		private Stream _body;
+    private string _htmlBody;
 		private NetworkStream _networkStream;
 		
 		private int _studentId = 11282717;
+
+    private string _responseTemplate = "{0} {1} {2}\r\n"+ 
+    "Content-Type: text/html\r\n"+
+    "Content-Length: {3}\r\n"+
+    "\r\n\r\n"+
+    "{4}";
 
     //////////////
     //Properties
@@ -38,7 +46,7 @@ namespace CS422
       get{return _headers;}
       set{_headers = value;}
     }
-		public ConcatStream Body
+		public Stream Body
 		{
       get{return _body;}
       set{_body = value;}
@@ -58,65 +66,80 @@ namespace CS422
 		////////////
 		// Methods 
 		//
-		public void WriteNotFoundResponse(string pageHTML)
+		public void WriteNotFoundResponse(string html)
 		{
+      // put the html thats passed in,
+      // into the body of the http response
+      _htmlBody = html;
+
 			// generate HTTP response 
-			string HtmlResponseTemplate = GetHtmlResponseTemplate(404);
+			string HttpResponse = GetHtmlResponse(404);
 
 			//Write to stream
-			WriteToNetworkStream(HtmlResponseTemplate);
+			WriteToNetworkStream(HttpResponse);
 		}
 
-		public bool WriteHTMLResponse(string htmlString)
+		public bool WriteHTMLResponse(string html)
 		{
+      // put the html thats passed in,
+      // into the body of the http response
+      _htmlBody = html;
+
 			// generate HTTP response 
-			string HtmlResponseTemplate = GetHtmlResponseTemplate(200);
-			string HtmlResponse = FormatResponseTemplate(HtmlResponseTemplate);
+			string HtmlResponseTemplate = GetHtmlResponse(200);
+
 			//Write to stream
-			bool successfulWrite = WriteToNetworkStream(HtmlResponseTemplate);
+			bool successfulWrite = WriteToNetworkStream(HtmlResponseTemplate); 
 			return successfulWrite;
 		}
 
 
-		public string FormatResponseTemplate(string template)
+    ///////////////////////////
+    /// Helper Methods ////////
+    ///////////////////////////
+		// public string FormatResponseTemplate(string template)
+		// {
+		// 	string response = string.Format(template, _studentId, DateTime.Now);
+
+    //   throw new NotImplementedException();
+    //   //return response;
+		// }
+
+		public bool WriteToNetworkStream(string HttpResponse)
 		{
-			string response = string.Format(template, _studentId, DateTime.Now);
-
-      throw new NotImplementedException();
-      //return response;
-		}
-
-
-
-		public bool WriteToNetworkStream(string htmlResponse)
-		{
+      Console.WriteLine("hello");
 			if (_networkStream.CanWrite)
 			{
-				byte[] buffer = Encoding.ASCII.GetBytes(htmlResponse);
+        Console.WriteLine("int if");
+				byte[] buffer = Encoding.ASCII.GetBytes(HttpResponse);
 				_networkStream.Write(buffer, 0, buffer.Length);
 				return true;
 			}
 			throw new Exception("Network stream was unwriteable");				
 		}
 
-		public string GetHtmlResponseTemplate(int statusCode)
+    // Creates a valid http response based off the status code given and 
+    // the member template
+		public string GetHtmlResponse(int statusCode)
 		{
+      // {0} Version 
+      // {1} statusCode 
+      // {2} ReasonPhrase
+      // {3} Content length (use the length of the body for this in exact bytes)      
+      // {4} Body
+      // TODO: find elegant way to add many headers
 			switch(statusCode)
 			{
 				case 200:
-				return   "";					
+				return   string.Format(_responseTemplate,
+         "HTTP/1.1", 200, "OK", _body.Length, _body );
+        case 404:
+				return   string.Format(_responseTemplate,
+         "HTTP/1.1", 404, "NotFound", _body.Length, _body);
+
 				default:
 				return "";
 			}
-
-			//response line, 
-			//response headers with the following at a minimum
-			//Content-Type: text/html
-			//Content-Length: ___
-			//	where “___” is replaced with the actual content (body) length, in bytes.
-			// Double break
-
-
 		}
 	}
 }

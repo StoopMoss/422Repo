@@ -17,10 +17,6 @@ namespace CS422
 
         public override long Position
         {
-            get {
-              throw new NotSupportedException(
-                  "Seeking not supported so Position is not supported");
-            }
             set {
                 throw new NotSupportedException(
                     "Seeking not supported so Position is not supported");
