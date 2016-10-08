@@ -8,7 +8,7 @@ all: clean build test
 
 
 .PHONY: build
-build: $(HW_DLL)
+build: $(HW_DLL) $(TESTS_DLL)
 
 .PHONY: test
 test: $(TESTS_DLL)

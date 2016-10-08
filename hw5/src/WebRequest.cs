@@ -12,6 +12,7 @@ namespace CS422
 		private string _uri;
 		private string _httpVersion;
 		private Dictionary<string, string> _headers;
+    private string[] _headersArray;
 		private Stream _body;
     private string _htmlBody;
 		private NetworkStream _networkStream;
@@ -46,6 +47,11 @@ namespace CS422
       get{return _headers;}
       set{_headers = value;}
     }
+  	public string[] HeadersArray
+    {
+      get{return _headersArray;}
+      set{_headersArray = value;}
+    }
 		public Stream Body
 		{
       get{return _body;}
@@ -61,6 +67,14 @@ namespace CS422
     //Constructor
 		public WebRequest ()
 		{
+      // initialize members 
+      _method = "";
+		 _uri = "";
+		 _httpVersion = "";
+     _headersArray = new string[1] {""};
+		 _body = new MemoryStream();
+     _htmlBody = "";
+		 //_networkStream = new NetworkStream();
 		}
 
 		////////////
@@ -86,10 +100,10 @@ namespace CS422
       _htmlBody = html;
 
 			// generate HTTP response 
-			string HtmlResponseTemplate = GetHtmlResponse(200);
+			string HtmlResponse = GetHtmlResponse(200);
 
 			//Write to stream
-			bool successfulWrite = WriteToNetworkStream(HtmlResponseTemplate); 
+			bool successfulWrite = WriteToNetworkStream(HtmlResponse); 
 			return successfulWrite;
 		}
 
@@ -108,14 +122,27 @@ namespace CS422
 		public bool WriteToNetworkStream(string HttpResponse)
 		{
       Console.WriteLine("hello");
-			if (_networkStream.CanWrite)
-			{
-        Console.WriteLine("int if");
-				byte[] buffer = Encoding.ASCII.GetBytes(HttpResponse);
-				_networkStream.Write(buffer, 0, buffer.Length);
-				return true;
-			}
-			throw new Exception("Network stream was unwriteable");				
+
+      try
+      {
+        if (_networkStream.CanWrite)
+			  {
+          Console.WriteLine("int if");
+  				byte[] buffer = Encoding.ASCII.GetBytes(HttpResponse);
+  				_networkStream.Write(buffer, 0, buffer.Length);
+  				return true;
+  			}  
+      }
+      catch (NullReferenceException)
+      {        
+        throw new NullReferenceException("WriteToNetworkStream: _ne");
+      }
+      catch (Exception)
+      {        
+    	  throw new Exception("Network stream was unwriteable");
+      }
+      return false;		      
+						
 		}
 
     // Creates a valid http response based off the status code given and 
@@ -128,14 +155,21 @@ namespace CS422
       // {3} Content length (use the length of the body for this in exact bytes)      
       // {4} Body
       // TODO: find elegant way to add many headers
+
+      // for each case call GenerateResponseString()
+        // create status line
+        // append headers
+        // append double new line and then body
+
+
 			switch(statusCode)
 			{
-				case 200:
+				case 200:        
 				return   string.Format(_responseTemplate,
-         "HTTP/1.1", 200, "OK", _body.Length, _body );
+         "HTTP/1.1", 200, "OK", _htmlBody.Length, _htmlBody );
         case 404:
 				return   string.Format(_responseTemplate,
-         "HTTP/1.1", 404, "NotFound", _body.Length, _body);
+         "HTTP/1.1", 404, "NotFound", _htmlBody.Length, _htmlBody);
 
 				default:
 				return "";

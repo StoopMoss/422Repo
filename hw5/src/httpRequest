@@ -1,0 +1,5 @@
+GET /test HTTP/1.1\r
+User-Agent: Conner is the usesr Agent haha\r
+Host: Conners.Test.url
+
+

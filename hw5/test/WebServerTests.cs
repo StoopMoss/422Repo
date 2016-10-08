@@ -16,10 +16,9 @@ namespace hw5Tests
     private NoSeekMemoryStream _stream;
 
     [Test]
-    [Ignore]
     public void TestOne()
     {
-      bool success = WebServer.Start(8081, 10);
+      bool success = WebServer.Start(8000, 1);
     }
   }
 }

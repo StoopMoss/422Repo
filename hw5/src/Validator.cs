@@ -58,6 +58,7 @@ namespace CS422
 
 		public void SetMembers()
 		{
+      _webRequest = new WebRequest();
 			_URL = "";
 			_validRequestLine = false;
 			_validRequestHeaders = false;
@@ -135,6 +136,9 @@ namespace CS422
 			else if (requestSoFar.Length >= 4) 
 			{				
 				_fullMethod = true;
+        Console.WriteLine("before");
+        _webRequest.Method = requestSoFar.Substring(0, 4);
+        Console.WriteLine("after");
 			}
 			else 
 			{				
@@ -171,6 +175,7 @@ namespace CS422
 				{
 					uriEnd = i;
 					_fullURI = true;
+           
 					break; 
 				}
 				else if (requestSoFar[i] == ' ')
@@ -184,6 +189,7 @@ namespace CS422
 				i++;
 			}
 			_URL = requestSoFar.Substring(uriStart, uriEnd);
+      _webRequest.URI = _URL;
 			return true;
 		}
 
@@ -195,6 +201,7 @@ namespace CS422
 			int i = 0;
 			int whiteSpaceToSkip = 2;
 			Console.WriteLine("Validating request Version");
+      Console.WriteLine("request so far: " + requestSoFar);
 
 			while(requestSoFar[i] != '\r' && requestSoFar[i+1] != '\n' && i < requestSoFar.Length)
 			{
@@ -203,9 +210,11 @@ namespace CS422
 					versionSubstring = requestSoFar.Substring (i, 10);// 10 is for "HTTP/1.1" + '\r' + '\n'
 					if (versionSubstring != "HTTP/1.1\r\n")
 					{
+            Console.WriteLine("returning false");
 						return false;
 					}
 					_fullVersion = true;
+          _webRequest.HTTPVersion = versionSubstring;
 					return true;
 				}
 				else if(' ' == requestSoFar[i])
@@ -247,6 +256,7 @@ namespace CS422
 				}
 			}
 			_fullHeaders = true;
+      _webRequest.HeadersArray = headers;
 			return true;
 		}
 

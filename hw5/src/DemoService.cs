@@ -25,13 +25,17 @@ namespace CS422
       string response = FormatResponseTemplate(c_template);
       
       // Write response
-      request.WriteHTMLResponse(response);
+      bool writeSuccessful = request.WriteHTMLResponse(response);
+      Console.WriteLine("DemoService Response Write status: " + writeSuccessful);
     }
 
     public string FormatResponseTemplate(string template)
 		{
-			string response = string.Format(template, _request.Method, _request.URI,
-      _request.Body.Length, _studentId);
+			// string response = string.Format(template, _request.Method, _request.URI,
+      // _request.Body.Length, _studentId);
+
+      string response = string.Format(template, _request.Method, _request.URI,
+      template.Length, _studentId);
 
       return response;
 		}
