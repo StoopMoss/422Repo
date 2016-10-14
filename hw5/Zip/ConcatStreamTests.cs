@@ -358,7 +358,31 @@ namespace hw5Tests
 			}
 		}
 
-    [Test]
+    	[Test]
+		public void WritePastEndOfConcatStreamThatDoesNotSupportLengthShouldExpandStream()
+		{
+			// Arrange
+      byte[] result = new byte[100];
+			byte[] bufferToWrite = Encoding.ASCII.GetBytes("12345");
+			MemoryStream stream1 = new MemoryStream();			
+			NoSeekMemoryStream stream2 = new NoSeekMemoryStream();
+			ConcatStream streamToTest = new ConcatStream(stream1, stream2);
+
+			// Act
+      streamToTest.Write(bufferToWrite, 0, bufferToWrite.Length);
+      streamToTest.Position = 0;
+
+      int bytesRead = streamToTest.Read(result,0, bufferToWrite.Length);
+      
+			//Assert
+      Assert.AreEqual(bufferToWrite.Length, bytesRead);
+      for (int i = 0; i < bufferToWrite.Length; i++)
+			{
+				Assert.AreEqual(bufferToWrite[i], result[i]);				
+			}
+		}
+
+		[Test]
 		public void ReadBackStreamDataInRandomChunks()
 		{
 			// Arrange

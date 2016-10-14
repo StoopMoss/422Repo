@@ -33,9 +33,6 @@ namespace CS422
         }
 
         // Constructors
-        public NoSeekMemoryStream():base()
-        {}
-
         public NoSeekMemoryStream(byte[] buffer):base(buffer)
         {}
 

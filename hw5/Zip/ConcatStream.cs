@@ -27,44 +27,24 @@ namespace CS422
 		{
 			get
 			{
-				if (CanSeek){
-					return _position;
-        }else {
-					throw new NotSupportedException ();
-        }
+				return _position;
 			}
 
 			set
 			{
-        if (CanSeek)
-        {
-          if (LengthSupport)
-          {
-            if (value >= 0 && value <= _length)
-            {
-              _position = value;
-            }
-            else if (value > _length)
-            {
-              _position = _length;  
-            }
-          }
-          else
-          {
-            if (value >= 0)
-				    {
-  						_position = value;
-  				  }
-  				  else if (value < 0)
-  				  {
-    					_position = 0;	
-  				  }
-          }         
-        }
-        else
-        {
-          throw new NotSupportedException();
-        }
+				//if (value >= 0 && value <= _length)
+        if (value >= 0)
+				{
+					_position = value;	
+				}
+				else if (value < 0)
+				{
+					_position = 0;	
+				}
+				// else
+				// {
+				// 	_position = _length;
+				// }
 			}
 		}
 
@@ -130,18 +110,15 @@ namespace CS422
 			// Check second stream's Length Support
 			try
 			{
-        Console.WriteLine("firstConstructor: second try statement");
 				secondStreamLength = second.Length;
 			}
 			catch (NotSupportedException)
 			{				
-        Console.WriteLine("firstConstructor: in second catch");
 				LengthSupport = false;
 			}			
 
 			if (secondStreamLength != -1)
 			{
-        Console.WriteLine("firstConstructor: in that if");
 				LengthSupport = true;
 				SetLength(firstStreamLength + secondStreamLength);
 			}

@@ -1,0 +1,7 @@
+cp src/DemoService.cs src/Validator.cs src/WebRequest.cs src/WebServer.cs src/WebService.cs src/ConcatStream.cs src/NoSeekMemoryStream.cs Zip/;
+cd Zip;
+mcs -target:library  DemoService.cs Validator.cs WebRequest.cs WebServer.cs WebService.cs ConcatStream.cs NoSeekMemoryStream.cs;
+zip mattinglyhw6.zip DemoService.cs Validator.cs WebRequest.cs WebServer.cs WebService.cs ConcatStream.cs NoSeekMemoryStream.cs;
+
+
+
