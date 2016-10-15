@@ -1,0 +1,4 @@
+cp src/ConcatStream.cs src/NoSeekMemoryStream.cs test/ConcatStreamTests.cs test/NoSeekTests.cs Zip/;
+cd Zip/;
+mcs -target:library ConcatStream.cs NoSeekMemoryStream.cs;
+zip mattinglyhw5.zip ConcatStream.cs NoSeekMemoryStream.cs ConcatStreamTests.cs NoSeekTests.cs;
