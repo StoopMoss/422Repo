@@ -37,7 +37,7 @@ namespace CS422
       AddService(new DemoService());
 
 			// Set TCP
-			Console.WriteLine ("starting TCPListener");
+			Console.WriteLine ("starting TCPListener on port " + port);
 			_listener = new TcpListener(IPAddress.Any, port);
 			_listener.Start();
       Console.WriteLine ("listening on port: "+ port);
@@ -142,9 +142,12 @@ namespace CS422
 
 			// Create a 10 sec timer
 			System.Timers.Timer timer = new System.Timers.Timer(10000);
+      Console.WriteLine("setting timer!");
+      //System.Timers.Timer timer = new System.Timers.Timer(1);
+      timer.AutoReset = false;
+
 			// Hook up the Elapsed event for the timer.
 			timer.Elapsed += OnTimedEvent;
-    	timer.Enabled = true;
 
 			Console.WriteLine("in Read");
 			if (networkStream.CanRead)
@@ -152,7 +155,7 @@ namespace CS422
 				try // using this try to catch the IOException thrown by the timer event
 				{
 					// Set read timeout
-					networkStream.ReadTimeout = 1500;
+					networkStream.ReadTimeout = 1500; 
 					timer.Start();
 					do {
 						try
@@ -177,7 +180,7 @@ namespace CS422
 						// If not full then request has not been read fully
 						if (validator.FullRequest && validRequest)
 				 		{
-	            Console.WriteLine("Request is full and valid");
+	            //Console.WriteLine("Request is full and valid");
 							// stop reading and send back a response
 							return validator.Request;
 				 		}
@@ -194,7 +197,10 @@ namespace CS422
 
 		private static void OnTimedEvent(object source, ElapsedEventArgs e)
 		{
+      Console.WriteLine("OnTimedEvent");
+      //source.Stop();
 	    throw new IOException("ten seconds passed before double line break was reached");
+      
 		}
 
 		private static WebRequest BuildRequest(TcpClient client)

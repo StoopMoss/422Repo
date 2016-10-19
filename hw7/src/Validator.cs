@@ -13,6 +13,9 @@ namespace CS422
 		private bool _validRequestLine;
 		private bool _validRequestHeaders;
 
+    private int _requestSizeThreshold1 = 2048;
+    private int _requestSizeThreshold2 = 100	*	1024;
+
 		private bool _fullMethod;
 		private bool _fullVersion;
 		private bool _fullURI;
@@ -107,12 +110,12 @@ namespace CS422
 					return false; 
 				}											
 			}
-				Console.WriteLine("_fullMethod "+ 
-				_fullMethod.ToString()+"_fullURI "+ 
-				_fullURI.ToString()+"_fullVersion"+
-				_fullVersion.ToString()+"  _fullHeaders)"+
-				_fullHeaders.ToString());
-				//TODO: do i need full headers?
+				// Console.WriteLine("_fullMethod "+ 
+				// _fullMethod.ToString()+"_fullURI "+ 
+				// _fullURI.ToString()+"_fullVersion"+
+				// _fullVersion.ToString()+"  _fullHeaders)"+
+				// _fullHeaders.ToString());
+				// //TODO: do i need full headers?
 			if (_fullMethod && _fullURI && _fullVersion && _fullHeaders)
 			{
 				_fullRequest = true;
@@ -135,10 +138,16 @@ namespace CS422
 			}
 			else if (requestSoFar.Length >= 4) 
 			{				
+        // check size limit
+        if (requestSoFar.Length > 2048 && requestSoFar.Substring(0, _requestSizeThreshold1).Contains("\r\n") != true)
+        {
+          return false;
+        }
+
 				_fullMethod = true;
-        Console.WriteLine("before");
+        //Console.WriteLine("before");
         _webRequest.Method = requestSoFar.Substring(0, 4);
-        Console.WriteLine("after");
+        //Console.WriteLine("after");
 			}
 			else 
 			{				
@@ -161,7 +170,7 @@ namespace CS422
 			// Set _URL to be used later
 			Console.WriteLine("Validating request URI");
 			string requestSoFar = Encoding.ASCII.GetString(buffer);
-      Console.WriteLine("requestSoFar "+ requestSoFar);
+      //Console.WriteLine("requestSoFar "+ requestSoFar);
 			int i = 0;
 			int whitespaces = 0;
 			int uriStart = 0, uriEnd = 0;
@@ -202,7 +211,7 @@ namespace CS422
 			int i = 0;
 			int whiteSpaceToSkip = 2;
 			Console.WriteLine("Validating request Version");
-      Console.WriteLine("request so far: " + requestSoFar);
+      //Console.WriteLine("request so far: " + requestSoFar);
 
 			while(requestSoFar[i] != '\r' && requestSoFar[i+1] != '\n' && i < requestSoFar.Length)
 			{
@@ -232,6 +241,12 @@ namespace CS422
 		{
 			String bufferAsString = Encoding.ASCII.GetString(buffer);
 			bufferAsString = bufferAsString.Substring(0, bufferAsString.IndexOf("\r\n\r\n"));
+
+      if(bufferAsString.Length > _requestSizeThreshold2)
+      {
+        return false;
+      }
+
 			string[] headers = bufferAsString.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
 
 			for (int i = 1; i < headers.Length; i++)
