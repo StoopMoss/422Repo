@@ -42,6 +42,23 @@ namespace hw8Tests
     }
 
     [Test]
+    public void CreateDir()
+    {
+       StdFSDir dir = new StdFSDir();
+
+    }
+
+    [Test]
+    public void GetDir()
+    {
+       StdFSDir dir = new StdFSDir();
+
+       dir = (StdFSDir)dir.GetDir("TestDir1");
+
+       //Assert.AreEqual(dir,  );
+    }
+
+    [Test]
     public void CreateDirWithForwardSlashInNameShouldReturnNull()
     {
       StdFSDir dir = new StdFSDir();

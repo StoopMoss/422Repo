@@ -33,39 +33,41 @@ namespace CS422
         }
 
     }
+    
     public class StandardFileSystem: FileSys422
     {
       private Dir422 _root;
       
+      //TODO: change this....
+      public Dir422 Root
+      {
+        set{_root = value;}
+      }
+
       public override Dir422 GetRoot()
       {
         return _root;
       }
 
-      //constructor
+      //constructors
       public StandardFileSystem()
+      {     }
+
+      public StandardFileSystem(StdFSDir root)
       {
-        Console.WriteLine(Directory.GetCurrentDirectory());
+        _root = root;
       }
 
+      // Methods
       public static StandardFileSystem Create(string rootDir)
       { 
-        StandardFileSystem fileSystem = new StandardFileSystem();
+        // create rootDir
+        DirectoryInfo dir = Directory.CreateDirectory(rootDir);
         
-        // // create rootDir
-        // DirectoryInfo dir = Directory.CreateDirectory(rootDir);
-        // _root = new StdFSDir();
-        // _root = _root.InitDir(dir.name);
-
-        // // loop through each dir and file calling create on each 
-        // // creating the filesystem
-        // IList<Dir422> dirs = _root.GetDirs();
-        // for (int i = 0; i < dirs.Length; i ++)
-        // {
-        //   dir = dir.CreateDir();
-        // }
-
+        StdFSDir root = new StdFSDir(rootDir, null);
         
+        StandardFileSystem fileSystem = new StandardFileSystem(root);
+
         return fileSystem;        
       }
 
@@ -104,8 +106,8 @@ namespace CS422
         public abstract IList<Dir422> GetDirs();
         public abstract IList<File422> GetFiles();
 
-        //public abstract Dir422 GetDir(string name);
-        // public abstract File422 GetFile(string name);
+        public abstract Dir422 GetDir(string name);
+        //public abstract File422 GetFile(string name);
 
         // public abstract bool ContainsDir(string fileName, bool recursive);
         // public abstract bool ContainsFile(string fileName, bool recursive);
@@ -130,10 +132,11 @@ namespace CS422
         _dirs = null;
       }
 
-      public StdFSDir(string name)
+      public StdFSDir(string name, StdFSDir parent)
       {
         _name = name;
         _dirs = null;
+        _parent = parent;
       }
 
       public override IList<File422> GetFiles()
@@ -165,6 +168,17 @@ namespace CS422
         Directory.CreateDirectory(name);
         //_name = name;
         return newDir;
+      }
+      
+      public override Dir422 GetDir(string name)
+      {
+        if (Directory.Exists(name))
+        {
+          // Return dir
+          StdFSDir dir = new StdFSDir();
+          return dir;
+        }
+        return null;
       }
 
       public void InitDir(string name, StdFSDir parent)

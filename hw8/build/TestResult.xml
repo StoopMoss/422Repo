@@ -1,24 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--This file represents the results of running a test suite-->
-<test-results name="/home/conner/Documents/422/422Repo/hw8/build/Hw_8_tests.dll" total="5" errors="0" failures="0" not-run="1" inconclusive="0" ignored="1" skipped="0" invalid="0" date="2016-10-20" time="11:42:00">
+<test-results name="/home/conner/Documents/422/422Repo/hw8/build/Hw_8_tests.dll" total="1" errors="0" failures="1" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2016-10-20" time="17:04:08">
   <environment nunit-version="2.6.4.0" clr-version="4.0.30319.17020" os-version="Unix 4.4.0.21" platform="Unix" cwd="/home/conner/Documents/422/422Repo/hw8" machine-name="Allen" user="conner" user-domain="Allen" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="Assembly" name="/home/conner/Documents/422/422Repo/hw8/build/Hw_8_tests.dll" executed="True" result="Success" success="True" time="0.008" asserts="0">
+  <test-suite type="Assembly" name="/home/conner/Documents/422/422Repo/hw8/build/Hw_8_tests.dll" executed="True" result="Failure" success="False" time="0.001" asserts="0">
     <results>
-      <test-suite type="Namespace" name="hw8Tests" executed="True" result="Success" success="True" time="0.008" asserts="0">
+      <test-suite type="Namespace" name="hw8Tests" executed="True" result="Failure" success="False" time="0.001" asserts="0">
         <results>
-          <test-suite type="TestFixture" name="StdFSDirTests" executed="True" result="Success" success="True" time="0.008" asserts="0">
+          <test-suite type="TestFixture" name="StdFSDirTests" executed="True" result="Failure" success="False" time="0.001" asserts="0">
             <results>
-              <test-case name="hw8Tests.StdFSDirTests.CreateDirWithBackwardSlashInNameShouldReturnNull" executed="True" result="Success" success="True" time="0.000" asserts="1" />
-              <test-case name="hw8Tests.StdFSDirTests.CreateDirWithEmptyNameShouldReturnNull" executed="True" result="Success" success="True" time="0.000" asserts="1" />
-              <test-case name="hw8Tests.StdFSDirTests.CreateDirWithForwardSlashInNameShouldReturnNull" executed="True" result="Success" success="True" time="0.000" asserts="1" />
-              <test-case name="hw8Tests.StdFSDirTests.GetDirs" executed="True" result="Success" success="True" time="0.000" asserts="1" />
-              <test-case name="hw8Tests.StdFSDirTests.GetFiles" executed="False" result="Ignored">
-                <reason>
-                  <message><![CDATA[]]></message>
-                </reason>
+              <test-case name="hw8Tests.StdFSDirTests.CreateDirWhenDirExists" executed="True" result="Failure" success="False" time="0.000" asserts="2">
+                <failure>
+                  <message><![CDATA[  Expected string length 6 but was 0. Strings differ at index 0.
+  Expected: "FSROOT"
+  But was:  <string.Empty>
+  -----------^
+]]></message>
+                  <stack-trace><![CDATA[at hw8Tests.StdFSDirTests.CreateDirWhenDirExists () <0x417eb4c0 + 0x000a7> in <filename unknown>:0
+]]></stack-trace>
+                </failure>
               </test-case>
-              <test-case name="hw8Tests.StdFSDirTests.GetName" executed="True" result="Success" success="True" time="0.000" asserts="1" />
             </results>
           </test-suite>
         </results>
