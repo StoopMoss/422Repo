@@ -24,10 +24,21 @@ namespace hw8Tests
     public void GetDirs()
     {
       StdFSDir dir = new StdFSDir();
+      StandardFileSystem sys = new StandardFileSystem();
+      sys =  StandardFileSystem.Create("FSROOT");
+      StdFSDir root = (StdFSDir)sys.GetRoot();
+      List<StdFSDir> expected = new List<StdFSDir>();
 
-      IList<Dir422> dirs = dir.GetDirs();
+      // set up a dir list to compare
+      StdFSDir dir1 = new StdFSDir("Dir1",root);
+      expected.Add(dir1);
+      // expected.Add(new StdFSDir("dir2",root));
+      // expected.Add(new StdFSDir("dir3",root));
+      // expected.Add(new StdFSDir("dir4",root));
 
-      Assert.AreEqual(null, dirs);
+      IList<Dir422> dirs = root.GetDirs();
+
+      Assert.AreEqual(expected, dirs);
     }
 
     [Ignore]
@@ -73,7 +84,7 @@ namespace hw8Tests
       dir = (StdFSDir)dir.CreateDir("\\bad\\name");
       Assert.Null(dir);
     }
-    
+
     [Test]
     public void CreateDirWithEmptyNameShouldReturnNull()
     {
@@ -86,7 +97,7 @@ namespace hw8Tests
     public void CreateDirWhenDirExists()
     {
       StdFSDir dir = new StdFSDir();
-      
+
       dir = (StdFSDir)dir.CreateDir("FSROOT");
 
       Assert.NotNull(dir);

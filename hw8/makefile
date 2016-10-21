@@ -12,7 +12,7 @@ build: $(HW_DLL) $(TESTS_DLL)
 .PHONY: test
 test: $(TESTS_DLL)
 	echo
-	echo "Compliling Tests..."	
+	echo "Compliling Tests..."
 	- nunit-console -noxml $(TESTS_DLL)
 
 .PHONY: zip
@@ -21,10 +21,10 @@ hw$(HW_NUM).zip: src/*.cs tests/*.cs
 	zip -FSj -9 hw$(HW_NUM).zip src/*.cs tests/*.cs
 
 .PHONY: clean
-clean: 
+clean:
 	echo
 	echo "Cleaning..."
-	- rm -f build/* hw$(HW_NUM).zip;  mkdir build/FSROOT;
+	- rm -f build/* hw$(HW_NUM).zip;  mkdir build/FSROOT build/FSROOT/Dir1;
 
 
 $(HW_DLL):
@@ -36,4 +36,4 @@ $(HW_DLL):
 $(TESTS_DLL): test/*.cs $(HW_DLL)
 	echo
 	echo "Building test library..."
-	mcs -r:$(HW_DLL) -pkg:mono-nunit -target:library -out:$@ -debug test/*.cs	
+	mcs -r:$(HW_DLL) -pkg:mono-nunit -target:library -out:$@ -debug test/*.cs

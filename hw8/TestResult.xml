@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="/home/conner/Documents/422/422Repo/hw8/build/Hw_8_tests.dll" total="9" errors="0" failures="2" not-run="1" inconclusive="0" ignored="1" skipped="0" invalid="0" date="2016-10-20" time="18:38:02">
+  <environment nunit-version="2.6.0.0" clr-version="4.0.30319.17020" os-version="Unix 3.19.0.32" platform="Unix" cwd="/home/conner/Documents/422/422Repo/hw8" machine-name="conner-HP-ENVY-6-Notebook-PC" user="conner" user-domain="conner-HP-ENVY-6-Notebook-PC" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="Assembly" name="/home/conner/Documents/422/422Repo/hw8/build/Hw_8_tests.dll" executed="True" result="Failure" success="False" time="0.052" asserts="0">
+    <results>
+      <test-suite type="Namespace" name="hw8Tests" executed="True" result="Failure" success="False" time="0.051" asserts="0">
+        <results>
+          <test-suite type="TestFixture" name="FileSystemTests" executed="True" result="Success" success="True" time="0.001" asserts="0">
+            <results>
+              <test-case name="hw8Tests.FileSystemTests.StartFileSystemTest" executed="True" result="Success" success="True" time="0.000" asserts="2" />
+            </results>
+          </test-suite>
+          <test-suite type="TestFixture" name="StdFSDirTests" executed="True" result="Failure" success="False" time="0.044" asserts="0">
+            <results>
+              <test-case name="hw8Tests.StdFSDirTests.CreateDir" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+              <test-case name="hw8Tests.StdFSDirTests.CreateDirWhenDirExists" executed="True" result="Failure" success="False" time="0.000" asserts="2">
+                <failure>
+                  <message><![CDATA[  Expected string length 6 but was 0. Strings differ at index 0.
+  Expected: "FSROOT"
+  But was:  <string.Empty>
+  -----------^
+]]></message>
+                  <stack-trace><![CDATA[at hw8Tests.StdFSDirTests.CreateDirWhenDirExists () [0x00000] in <filename unknown>:0
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case name="hw8Tests.StdFSDirTests.CreateDirWithBackwardSlashInNameShouldReturnNull" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+              <test-case name="hw8Tests.StdFSDirTests.CreateDirWithEmptyNameShouldReturnNull" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+              <test-case name="hw8Tests.StdFSDirTests.CreateDirWithForwardSlashInNameShouldReturnNull" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+              <test-case name="hw8Tests.StdFSDirTests.GetDir" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+              <test-case name="hw8Tests.StdFSDirTests.GetDirs" executed="True" result="Failure" success="False" time="0.000" asserts="1">
+                <failure>
+                  <message><![CDATA[  Expected: < <CS422.StdFSDir> >
+  But was:  null
+]]></message>
+                  <stack-trace><![CDATA[at hw8Tests.StdFSDirTests.GetDirs () [0x00000] in <filename unknown>:0
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case name="hw8Tests.StdFSDirTests.GetFiles" executed="False" result="Ignored">
+                <reason>
+                  <message><![CDATA[]]></message>
+                </reason>
+              </test-case>
+              <test-case name="hw8Tests.StdFSDirTests.GetName" executed="True" result="Success" success="True" time="0.000" asserts="1" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

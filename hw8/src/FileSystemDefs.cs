@@ -33,11 +33,11 @@ namespace CS422
         }
 
     }
-    
+
     public class StandardFileSystem: FileSys422
     {
       private Dir422 _root;
-      
+
       //TODO: change this....
       public Dir422 Root
       {
@@ -60,15 +60,15 @@ namespace CS422
 
       // Methods
       public static StandardFileSystem Create(string rootDir)
-      { 
+      {
         // create rootDir
         DirectoryInfo dir = Directory.CreateDirectory(rootDir);
-        
+
         StdFSDir root = new StdFSDir(rootDir, null);
-        
+
         StandardFileSystem fileSystem = new StandardFileSystem(root);
 
-        return fileSystem;        
+        return fileSystem;
       }
 
 
@@ -111,7 +111,7 @@ namespace CS422
 
         // public abstract bool ContainsDir(string fileName, bool recursive);
         // public abstract bool ContainsFile(string fileName, bool recursive);
-        
+
         public abstract Dir422 CreateDir(string name);
         // public abstract File422 CreateFile(string name);
     }
@@ -151,11 +151,19 @@ namespace CS422
 
       public override IList<Dir422> GetDirs()
       {
+        string path = "./"
+        List<string> dirNames = Directory.EnumerateDirectories(path);
+
+        foreach (string dir in dirNames)
+        {
+          _dirs.Add(this.GetDir(dir));
+        }
+
         return _dirs;
       }
 
       public override Dir422 CreateDir(string name)
-      {        
+      {
         StdFSDir newDir = new StdFSDir();
 
         // validate the name
@@ -164,12 +172,12 @@ namespace CS422
           Console.WriteLine("in if");
           return null;
         }
-        
+
         Directory.CreateDirectory(name);
         //_name = name;
         return newDir;
       }
-      
+
       public override Dir422 GetDir(string name)
       {
         if (Directory.Exists(name))
@@ -201,7 +209,7 @@ namespace CS422
         // // Make sure this does not open a readable stream
         // public abstract Stream OpenWriteOnly();
     }
-    
+
 
     public class StdFSFile : File422
     {
@@ -213,7 +221,7 @@ namespace CS422
       public StdFSFile(string path)
       {
         _path = path;
-      }  
+      }
       //public override Stream OpenReadOnly() {}
       //public override Stream OpenWriteOnly() {}
     }
