@@ -24,7 +24,7 @@ hw$(HW_NUM).zip: src/*.cs tests/*.cs
 clean:
 	echo
 	echo "Cleaning..."
-	- rm -f build/* hw$(HW_NUM).zip;  mkdir build/FSROOT build/FSROOT/Dir1;
+	- rm -rf build/* hw$(HW_NUM).zip;  mkdir build/FSROOT build/FSROOT/Dir1;
 
 
 $(HW_DLL):

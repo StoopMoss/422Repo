@@ -12,6 +12,57 @@ namespace hw8Tests
 	[TestFixture ]
 	public class StdFSDirTests
 	{
+    private StdFSDir _root;
+    private string _rootPath = "/home/conner/Documents/422/422Repo/hw8/build/FSROOT";
+
+    [SetUp]
+    public void Init()
+    {
+      StandardFileSystem sys = new StandardFileSystem();
+      sys =  StandardFileSystem.Create("FSROOT");      
+      _root = (StdFSDir)sys.GetRoot();
+
+      File.Create(_rootPath + "/file1");
+      Directory.CreateDirectory(_rootPath + "/Dir1");
+      Directory.CreateDirectory(_rootPath + "/Dir1" + "/SubDir1");
+
+      Console.WriteLine("Setup Complete");
+      Console.WriteLine("Root: " + _root);
+    }
+
+    [TearDown]
+    public void Dispose()
+    {
+      Console.WriteLine("Removing test files...");
+      try 
+      {
+        File.Delete(_rootPath + "/file1");
+        Directory.Delete(_rootPath + "/Dir1" + "/SubDir1");
+        Directory.Delete(_rootPath +"/Dir1");
+        Directory.Delete(_rootPath +"/Dir2");
+      }
+      catch(DirectoryNotFoundException e)
+      {
+        Console.WriteLine("Caught DirectoryNotFoundException");  
+      }
+      Console.WriteLine("TearDown finished");
+    }
+
+    [Test]
+    public void GetFileNameFromFullPathTest()
+    {
+      string returned = StdFSDir.GetFileNameFromFullPath(_rootPath);
+
+      Assert.AreEqual("FSROOT", returned);
+    }
+
+    [Test]
+    public void GetFileNameFromFullPathEndingInslashShouldBeSafe()
+    {
+      string returned = StdFSDir.GetFileNameFromFullPath(_rootPath + "/");
+
+      Assert.AreEqual("FSROOT", returned);
+    }
 
     [Test]
     public void GetName()
@@ -23,51 +74,129 @@ namespace hw8Tests
     [Test]
     public void GetDirs()
     {
-      StdFSDir dir = new StdFSDir();
-      StandardFileSystem sys = new StandardFileSystem();
-      sys =  StandardFileSystem.Create("FSROOT");
-      StdFSDir root = (StdFSDir)sys.GetRoot();
-      List<StdFSDir> expected = new List<StdFSDir>();
+      List<Dir422> expected = new List<Dir422>();
 
       // set up a dir list to compare
-      StdFSDir dir1 = new StdFSDir("Dir1",root);
+      Dir422 dir1 = new StdFSDir(_rootPath + "/Dir1", "Dir1", _root);
       expected.Add(dir1);
       // expected.Add(new StdFSDir("dir2",root));
       // expected.Add(new StdFSDir("dir3",root));
       // expected.Add(new StdFSDir("dir4",root));
 
-      IList<Dir422> dirs = root.GetDirs();
+      List<Dir422> dirs = (List<Dir422>)_root.GetDirs();
 
-      Assert.AreEqual(expected, dirs);
+      Assert.NotNull(dirs);
+      Assert.AreEqual(expected.Count, dirs.Count);
+      Assert.AreEqual(expected[0].Name, dirs[0].Name);
+
+      //This for some reason fails on same types???
+      //Assert.AreEqual(expected, dirs);
+
     }
 
-    [Ignore]
     [Test]
     public void GetFiles()
     {
-      StdFSDir dir = new StdFSDir();
 
-      IList<File422> files = dir.GetFiles();
+      File422 file1 = new StdFSFile(_rootPath + "/file1", "file1", _root);
+      List<File422>  expected = new List<File422>();
+      expected.Add(file1);
+      
+      List<File422> files = (List<File422>)_root.GetFiles();
 
-      Assert.AreEqual(null, files);
+      Assert.NotNull(files);
+      Assert.AreEqual(expected.Count, files.Count);      
+      //Assert.AreEqual(expected, files);
+    }
+    //TODO: Get many files
+
+    [Test]
+    public void GetFile()
+    {
+      StdFSFile file = (StdFSFile)_root.GetFile("file1");
+
+       Assert.NotNull(file);
+       Assert.AreEqual("file1", file.Name);
+       Assert.AreEqual(_rootPath + "/file1", file.Path);
+       Assert.AreEqual(_root, file.Parent);
     }
 
     [Test]
-    public void CreateDir()
+    public void GetFileThatDoesntExist()
     {
-       StdFSDir dir = new StdFSDir();
+      StdFSFile file = (StdFSFile)_root.GetFile("file2");
 
+       Assert.Null(file);
     }
+
+    [Test]
+    public void CreateFileWhenFileExists()
+    {
+      File422 file = _root.CreateFile("file1");
+
+      Assert.NotNull(file);
+      Assert.AreEqual("file1", file.Name);
+      Assert.AreEqual("FSROOT", file.Parent.Name);
+    }
+    
+    [Test]
+    public void CreateFileWhenFileDoesNotExist()
+    {
+      File422 file = _root.CreateFile("file2");
+
+      Assert.NotNull(file);
+      Assert.AreEqual("file2", file.Name);
+      Assert.AreEqual("FSROOT", file.Parent.Name);
+    }
+
+
+
 
     [Test]
     public void GetDir()
     {
-       StdFSDir dir = new StdFSDir();
+       StdFSDir dir = (StdFSDir)_root.GetDir("Dir1");
 
-       dir = (StdFSDir)dir.GetDir("TestDir1");
-
-       //Assert.AreEqual(dir,  );
+       Assert.NotNull(dir);
+       Assert.AreEqual("Dir1", dir.Name);
+       Assert.AreEqual(_rootPath + "/Dir1", dir.Path);
+       Assert.AreEqual(_root, dir.Parent);
     }
+    
+    [Test]
+    public void GetDirThatDoesntExist()
+    {
+       StdFSDir dir = (StdFSDir)_root.GetDir("Dir2");
+
+       Assert.Null(dir);
+    }
+
+    //TODO: Add checks for bad name...
+
+    [Test]
+    public void GetDirWithForwardSlashInNameShouldReturnNull()
+    {
+      StdFSDir dir = new StdFSDir();
+      dir = (StdFSDir)dir.GetDir("/bad/name");
+      Assert.Null(dir);
+    }
+
+    [Test]
+    public void GetDirWithBackwardSlashInNameShouldReturnNull()
+    {
+      StdFSDir dir = new StdFSDir();
+      dir = (StdFSDir)dir.GetDir("\\bad\\name");
+      Assert.Null(dir);
+    }
+
+    [Test]
+    public void GetDirWithEmptyNameShouldReturnNull()
+    {
+      StdFSDir dir = new StdFSDir();
+      dir = (StdFSDir)dir.GetDir("");
+      Assert.Null(dir);
+    }
+        
 
     [Test]
     public void CreateDirWithForwardSlashInNameShouldReturnNull()
@@ -96,13 +225,82 @@ namespace hw8Tests
     [Test]
     public void CreateDirWhenDirExists()
     {
-      StdFSDir dir = new StdFSDir();
-
-      dir = (StdFSDir)dir.CreateDir("FSROOT");
+      Dir422 dir = _root.CreateDir("Dir1");
 
       Assert.NotNull(dir);
-      Assert.AreEqual("FSROOT", dir.Name);
+      Assert.AreEqual("Dir1", dir.Name);
+      Assert.AreEqual("FSROOT", dir.Parent.Name);
     }
+    
+    [Test]
+    public void CreateDirWhenDirDoesNotExist()
+    {
+      Dir422 dir = _root.CreateDir("Dir2");
+
+      Assert.NotNull(dir);
+      Assert.AreEqual("Dir2", dir.Name);
+      Assert.AreEqual("FSROOT", dir.Parent.Name);
+    }
+
+
+    [Test]
+    public void ContainsDirNonRecursiveForDirectoryThatExists()
+    {
+      bool containsDir = _root.ContainsDir("Dir1", false);
+      Assert.IsTrue(containsDir);
+    }
+    
+
+    [Test]
+    public void ContainsDirNonRecursiveForDirectoryThatDoesntExist()
+    {
+      bool containsDir = _root.ContainsDir("Dir2", false);
+      Assert.IsFalse(containsDir);
+    }
+
+    [Test]
+    public void ContainsDirRecursivelyForDirectoryThatExists()
+    {
+      bool containsDir = _root.ContainsDir("SubDir1", true);
+      Assert.IsTrue(containsDir);
+    }
+
+    [Test]
+    public void ContainsDirRecursivelyForDirectoryThatDoesntExist()
+    {
+      bool containsDir = _root.ContainsDir("SubDir2", true);
+      Assert.IsFalse(containsDir);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    [Test]
+    public void ContainsDirWithEmptyNameShouldReturnFalse(bool recursive)
+    {
+      bool containsDir = _root.ContainsDir("", recursive);
+      Assert.IsFalse(containsDir);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    [Test]
+    public void ContainsDirWithForwardSlashInNameShouldReturnFalse(bool recursive)
+    {
+      bool containsDir = _root.ContainsDir("bad/name", recursive);
+      Assert.IsFalse(containsDir);
+    }
+    
+    [TestCase(false)]
+    [TestCase(true)]
+    [Test]
+    public void ContainsDirWithBackwardSlashInNameShouldReturnFalse(bool recursive)
+    {
+      bool containsDir = _root.ContainsDir("bad\\name", recursive);
+      Assert.IsFalse(containsDir);
+    }
+
+
+
 
   }
 }
