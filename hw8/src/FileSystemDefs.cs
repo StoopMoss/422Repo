@@ -15,21 +15,25 @@ namespace CS422
 
         public virtual bool Contains (File422 file)
         {
-            // Dir422 parent = file.Parent;
-            // while (parent != null)
-            // {
-                //return Contains(file.Parent);
-            // }
+            Dir422 parent = file.Parent;
+            while (parent != null)
+            {
+              if (parent == GetRoot())
+              {
+                return true;
+              }
+              return Contains(file.Parent);
+            }
             return false;
         }
 
         public virtual bool Contains (Dir422 dir)
         {
-            //if (dir.Parent == null) { return false; }
+            if (dir.Parent == null) { return false; }
 
-            //if (GetRoot() == dir) { return true; }
+            if (GetRoot() == dir) { return true; }
 
-            //else { return Contains(dir.Parent); }
+            else { return Contains(dir.Parent); }
             return false;
         }
 
@@ -109,7 +113,7 @@ namespace CS422
         public abstract File422 GetFile(string name);
 
         public abstract bool ContainsDir(string fileName, bool recursive);
-        // public abstract bool ContainsFile(string fileName, bool recursive);
+        public abstract bool ContainsFile(string fileName, bool recursive);
 
         public abstract Dir422 CreateDir(string name);
         public abstract File422 CreateFile(string name);
@@ -134,6 +138,7 @@ namespace CS422
       {
         _name = "";
         _dirs = new List<Dir422>();
+        _files = new  List<File422>();
         _path = "";
       }
 
@@ -141,6 +146,7 @@ namespace CS422
       {
         _name = name;        
         _dirs =  new List<Dir422>();
+        _files = new  List<File422>();
         _parent = parent;
         _path = fullPath;
       }
@@ -244,8 +250,12 @@ namespace CS422
         {
           // Create file in actual fileSystem 
           Console.WriteLine("path: " + _path);
-          Console.WriteLine("cwd = " + Directory.GetCurrentDirectory());
-          File.Create(_path + "/" + name).Close();
+          Console.WriteLine("Creating: " + _path +"/"+ name);
+          FileStream stream = File.Create(_path + "/" + name);
+          stream.Close();
+          stream.Dispose();
+          Console.WriteLine("made it past close");
+
           // Create a new stdFile ref
           newFile = new StdFSFile(_path + "/" + name, name, this);
           // Add that to the list of sub dirs for this dir
@@ -349,6 +359,54 @@ namespace CS422
         return false;
       }
 
+      public override bool ContainsFile(string name, bool recursive)
+      {
+         if (!IsValidName(name))
+        { return false; }
+
+        //Prepend the full path for accurate comparison
+        string fullFileName = _path + "/" + name;
+
+        // See if it exsists
+        Console.WriteLine("Looking for " + fullFileName);
+        List<string> fileNames = Directory.EnumerateFiles(_path).ToList<string>();
+        Console.WriteLine("fileNames.Count " + fileNames.Count);
+
+        int i = 0;
+        foreach (string fileName in fileNames)
+        {
+          Console.WriteLine("fullFileName " + fullFileName);
+          Console.WriteLine("fileName " + fileName);
+
+          if(fullFileName == fileName)
+          {
+            return true;
+          }
+        }
+
+        // check if recursive
+        if (recursive) 
+        {
+          // Already Checked imidieat dir and no match
+          // so recurse into each dir
+          // To recurse into dirs we must have thier reference
+          GetDirs();
+          Console.WriteLine("YOOOOOO");
+          foreach (Dir422 dir in _dirs)
+          {
+            if (dir.ContainsFile(name, true))
+            {
+              // If contains ever returns true from a recursive Search
+              // Then dir was found so return true
+              return true;
+            }
+          }
+        }
+        // Never found dir so return false
+        return false;
+      }
+
+
       public bool IsValidName(string name)
       {
          if (name.Contains("/") || name.Contains("\\") || String.IsNullOrEmpty(name))
@@ -391,10 +449,10 @@ namespace CS422
         public abstract Dir422 Parent { get; }
 
         // Make sure this does not open a writeable stream
-        // public abstract Stream OpenReadOnly();
+        public abstract Stream OpenReadOnly();
 
         // // Make sure this does not open a readable stream
-        // public abstract Stream OpenWriteOnly();
+        public abstract Stream OpenReadWrite();
     }
 
 
@@ -403,9 +461,16 @@ namespace CS422
       private string _path;
       private string _name;
       private Dir422 _parent;
+      private List<Stream> _readStreams;
+      private Stream _writeStream;
       
       // Properties for testing
       public string Path { get{return _path;}}
+
+      public List<Stream> ReadStreams
+      {
+        get{return _readStreams;}
+      }
 
       //Reg props
       public override string Name{ get {return _name;}   }
@@ -417,6 +482,8 @@ namespace CS422
       public StdFSFile(string path)
       {
         _path = path;
+        _readStreams = new List<Stream>();
+        //_writeStream = new Stream();
       }
 
       public StdFSFile(string fullPath, string name, StdFSDir parent)
@@ -424,11 +491,250 @@ namespace CS422
         _name = name;        
         _parent = parent;
         _path = fullPath;
+        _readStreams = new List<Stream>();
+        //_writeStream = new Stream();
       }
 
 
-      //public override Stream OpenReadOnly() {}
-      //public override Stream OpenWriteOnly() {}
+      public override Stream OpenReadOnly() 
+      {
+        Stream stream;
+        try
+        {
+          Console.WriteLine("Attempting to open "+ _path);
+          stream = File.OpenRead(_path);
+        }
+        catch (System.Exception)
+        {
+          Console.WriteLine("caught exception");
+          return null;          
+        }
+
+        // add stream to list of read streams
+        _readStreams.Add(stream);
+        return stream;
+      }
+
+      public override Stream OpenReadWrite() 
+      {
+        Stream stream;
+        try
+        {
+          Console.WriteLine("Attempting to open "+ _path);
+          stream = File.OpenWrite(_path);
+        }
+        catch (System.Exception)
+        {
+          Console.WriteLine("caught exception");
+          return null;          
+        }
+
+        // add stream to list of read streams
+        _writeStream = stream;
+        return stream;    
+        
+      }
+
     }
+
+
+    public class MemoryFileSystem : FileSys422
+    {
+      private Dir422 _root;
+
+      public MemoryFileSystem()
+      {
+        _root = new MemFSDir("root", null);
+      }
+
+      public override Dir422 GetRoot()
+      {
+        return _root;
+      }
+
+      //public override bool Contains(Dir422 dir)     {     }
+
+      //public bool Contains(File422 file) {      }
+
+    }
+    
+    public class MemFSDir :Dir422
+    {
+      private string _name;
+      private Dir422 _parent;
+      private List<Dir422> _dirs;
+      private List<File422> _files;
+
+      public override string Name{ get{return _name;} }
+      public override Dir422 Parent { get {return _parent;} }
+
+      public override IList<Dir422> GetDirs()
+      {        
+        return _dirs;
+      }
+
+      public override IList<File422> GetFiles()
+      {
+        return _files;
+      }
+
+      public override Dir422 GetDir(string name)
+      {
+        foreach(Dir422 dir in _dirs)
+        {
+          if (dir.Name == name)
+          {
+            return dir;
+          }
+        }
+        return null;
+      }
+
+      public override File422 GetFile(string name)
+      {
+        foreach(File422 file in _files)
+        {
+          if (file.Name == name)
+          {
+            return file;
+          }
+        }
+        return null;
+      }
+
+      public override bool ContainsDir(string name, bool recursive)
+      {
+        foreach(Dir422 dir in _dirs)
+        {
+          if (dir.Name == name)
+          {
+            return true;
+          }
+        }
+
+        if(recursive)
+        {
+          //recurse
+          foreach(Dir422 dir in _dirs)
+          {
+            return dir.ContainsDir(name, true);
+          }
+        }
+        return false;
+      }      
+
+      public override bool ContainsFile(string name, bool recursive)
+      {
+        foreach(File422 file in _files)
+        {
+          if (file.Name == name)
+          {
+            return true;
+          }
+        }
+
+        if(recursive)
+        {
+          //recurse
+          foreach(Dir422 dir in _dirs)
+          {
+            return dir.ContainsFile(name, true);
+          }
+        }
+        return false;
+      }      
+      
+      public override Dir422 CreateDir(string name)
+      {
+        Dir422 dir = GetDir(name);
+        if (dir == null)
+        {
+          dir = new MemFSDir(name, this);
+          _dirs.Add(dir);
+        }
+        return dir;
+      }
+
+      public override File422 CreateFile(string name)
+      {
+        File422 file = GetFile(name);
+        if (file == null)
+        {
+          file = new MemFSFile(name, this);
+          _files.Add(file);
+        }
+        return file;
+      }
+
+
+      public MemFSDir() 
+      {}      
+      
+      public MemFSDir(string name, Dir422 parent)
+      {
+        _name = name;
+        _parent = parent;
+      }
+
+    }
+    
+    public class MemFSFile : File422
+    {      
+      private string _name;
+      private Dir422 _parent;
+      private  MemoryStream buffer = new MemoryStream();
+      private int _numberOfReadStreams;
+      private bool _writeStreamOpen = false;
+
+      public override string Name{ get{return _name;} }
+      public override Dir422 Parent { get {return _parent;} }
+
+      // Make sure this does not open a writeable stream
+      public override Stream OpenReadOnly()
+      {
+
+       
+
+        if (buffer == null)
+        {
+          buffer = new 
+          _numberOfReadStreams++;
+          return buffer;  
+        }
+        if (_writeStreamOpen)
+        {
+          return null;
+        }
+
+
+        
+      }
+ 
+      // // Make sure this does not open a readable stream
+      public override Stream OpenReadWrite()
+      {
+        if (_writeStreamOpen)
+        {
+          return null;
+        }
+
+        if(_numberOfReadStreams > 0)
+        {
+          return null;
+        }
+        
+        buffer.Position = 0;
+        _writeStreamOpen = true;
+        return buffer;
+      }
+  
+      public MemFSFile() {}
+      public MemFSFile(string name, Dir422 parent) 
+      {
+        _name = name;
+        _parent = parent;
+      }
+    }
+
 
 }

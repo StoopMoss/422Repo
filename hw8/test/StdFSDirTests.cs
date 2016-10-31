@@ -22,9 +22,10 @@ namespace hw8Tests
       sys =  StandardFileSystem.Create("FSROOT");      
       _root = (StdFSDir)sys.GetRoot();
 
-      File.Create(_rootPath + "/file1");
+      File.Create(_rootPath + "/file1").Close();
       Directory.CreateDirectory(_rootPath + "/Dir1");
       Directory.CreateDirectory(_rootPath + "/Dir1" + "/SubDir1");
+      File.Create(_rootPath + "/Dir1/subfile1").Close();
 
       Console.WriteLine("Setup Complete");
       Console.WriteLine("Root: " + _root);
@@ -37,6 +38,8 @@ namespace hw8Tests
       try 
       {
         File.Delete(_rootPath + "/file1");
+        File.Delete(_rootPath + "/file2");
+        File.Delete(_rootPath + "/Dir1/subfile1");
         Directory.Delete(_rootPath + "/Dir1" + "/SubDir1");
         Directory.Delete(_rootPath +"/Dir1");
         Directory.Delete(_rootPath +"/Dir2");
@@ -241,6 +244,36 @@ namespace hw8Tests
       Assert.AreEqual("Dir2", dir.Name);
       Assert.AreEqual("FSROOT", dir.Parent.Name);
     }
+
+    [Test]
+    public void ContainsFileNonRecursiveAndFileExists()
+    {
+      bool containsFile = _root.ContainsFile("file1", false);
+      Assert.IsTrue(containsFile);
+    }
+
+    [Test]
+    public void ContainsFileNonRecursiveAndFileDoesntExist()
+    {
+      bool containsFile = _root.ContainsFile("file2", false);
+      Assert.IsFalse(containsFile);
+    }
+
+
+  [Test]
+    public void ContainsFileRecursiveAndFileExists()
+    {
+      bool containsFile = _root.ContainsFile("subfile1", true);
+      Assert.IsTrue(containsFile);
+    }
+
+    [Test]
+    public void ContainsFileRecursiveAndFileDoesntExist()
+    {
+      bool containsFile = _root.ContainsFile("subfile2", true);
+      Assert.IsFalse(containsFile);
+    }
+
 
 
     [Test]

@@ -1,0 +1,5 @@
+/home/conner/Documents/422/422Repo/WebServer/WebServerConsole/WebServerLib/obj/Release/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/conner/Documents/422/422Repo/WebServer/WebServerConsole/WebServerLib/bin/Release/WebServerLib.dll.mdb
+/home/conner/Documents/422/422Repo/WebServer/WebServerConsole/WebServerLib/bin/Release/WebServerLib.dll
+/home/conner/Documents/422/422Repo/WebServer/WebServerConsole/WebServerLib/obj/Release/WebServerLib.dll
+/home/conner/Documents/422/422Repo/WebServer/WebServerConsole/WebServerLib/obj/Release/WebServerLib.dll.mdb

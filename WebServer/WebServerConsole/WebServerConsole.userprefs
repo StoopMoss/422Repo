@@ -1,0 +1,30 @@
+﻿<Properties StartupItem="WebServerConsole/WebServerConsole.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="WebServerLib/WebRequest.cs">
+    <Files>
+      <File FileName="WebServerLib/FilesWebService.cs" Line="135" Column="4" />
+      <File FileName="WebServerLib/WebServer.cs" Line="62" Column="1" />
+      <File FileName="WebServerLib/EmptyClass.cs" Line="25" Column="12" />
+      <File FileName="WebServerConsole/Program.cs" Line="40" Column="7" NotebookId="1" />
+      <File FileName="WebServerLib/WebRequest.cs" Line="143" Column="1" NotebookId="1" />
+    </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+      <Pad Id="MonoDevelop.NUnit.TestPad">
+        <State name="__root__">
+          <Node name="WebServerConsole" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/home/conner/Documents/422/422Repo/WebServer/WebServerConsole/WebServerTests/FilesWebServiceTests.cs" line="36" column="1" />
+      <Breakpoint file="/home/conner/Documents/422/422Repo/WebServer/WebServerConsole/WebServerTests/FilesWebServiceTests.cs" line="37" column="1" />
+      <Breakpoint file="/home/conner/Documents/422/422Repo/WebServer/WebServerConsole/WebServerLib/WebRequest.cs" line="143" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

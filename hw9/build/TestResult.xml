@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="/home/conner/Documents/422/422Repo/hw9/build/Hw_9_tests.dll" total="1" errors="1" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2016-10-28" time="14:50:06">
+  <environment nunit-version="2.6.4.0" clr-version="4.0.30319.17020" os-version="Unix 4.4.0.21" platform="Unix" cwd="/home/conner/Documents/422/422Repo/hw9" machine-name="Allen" user="conner" user-domain="Allen" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="Assembly" name="/home/conner/Documents/422/422Repo/hw9/build/Hw_9_tests.dll" executed="False" result="Cancelled">
+    <results>
+      <test-suite type="Namespace" name="hw9Tests" executed="False" result="Cancelled">
+        <results>
+          <test-suite type="TestFixture" name="WebServerIntegrationTests" executed="False" result="Cancelled">
+            <results>
+              <test-case name="hw9Tests.WebServerIntegrationTests.IntegrationTest" executed="False" result="Cancelled">
+                <failure>
+                  <message><![CDATA[Test cancelled by user]]></message>
+                  <stack-trace><![CDATA[at (wrapper managed-to-native) System.Net.Sockets.Socket:Accept_internal (intptr,int&,bool)
+at System.Net.Sockets.Socket.Accept_internal (System.Net.Sockets.SafeSocketHandle safeHandle, System.Int32& error, Boolean blocking) <0x4171a270 + 0x0003f> in <filename unknown>:0
+at System.Net.Sockets.Socket.Accept () <0x4171a0d0 + 0x0003b> in <filename unknown>:0
+at System.Net.Sockets.TcpListener.AcceptTcpClient () <0x4171a000 + 0x00027> in <filename unknown>:0
+at CS422.WebServer.Start (Int32 port, Int32 numberOfThreads, System.String rootName) <0x402d0ff0 + 0x003b7> in <filename unknown>:0
+at hw9Tests.WebServerIntegrationTests.IntegrationTest () <0x402ce4d0 + 0x0001f> in <filename unknown>:0
+]]></stack-trace>
+                </failure>
+              </test-case>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
