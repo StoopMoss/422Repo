@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BigNumLib", "BigNumLib\BigNumLib.csproj", "{02736F7D-3AF7-4F79-89D1-AA104C067E7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BigNumTests", "BigNumTests\BigNumTests.csproj", "{78D2899C-E7CD-4E40-A0F2-C021ED2B58A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerminalApp", "Console\TerminalApp.csproj", "{9C3D18B0-7D0C-42D6-B6E1-A71E7AB8F32F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{02736F7D-3AF7-4F79-89D1-AA104C067E7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02736F7D-3AF7-4F79-89D1-AA104C067E7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02736F7D-3AF7-4F79-89D1-AA104C067E7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02736F7D-3AF7-4F79-89D1-AA104C067E7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78D2899C-E7CD-4E40-A0F2-C021ED2B58A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78D2899C-E7CD-4E40-A0F2-C021ED2B58A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78D2899C-E7CD-4E40-A0F2-C021ED2B58A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78D2899C-E7CD-4E40-A0F2-C021ED2B58A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C3D18B0-7D0C-42D6-B6E1-A71E7AB8F32F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C3D18B0-7D0C-42D6-B6E1-A71E7AB8F32F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C3D18B0-7D0C-42D6-B6E1-A71E7AB8F32F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C3D18B0-7D0C-42D6-B6E1-A71E7AB8F32F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
