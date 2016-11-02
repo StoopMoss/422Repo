@@ -1,0 +1,11 @@
+﻿
+Dev notes:
+
+Questions:
+	Design question, where should trailing and leading zeros be removed?
+		my initialization function seems to remove leading zeros but not trailing zeros.
+		Should I take car of this at initialization or toString.
+
+	Answer, as i wrote this I relized that it would probably be best to perform all
+	zero truncation at initialization.  that way no other class function will need 
+	to worry about it during the life-time of the object.

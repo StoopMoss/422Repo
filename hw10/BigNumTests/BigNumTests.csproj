@@ -32,6 +32,7 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Test.cs" />
@@ -39,6 +40,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="EmptyTextFile.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BigNumLib\BigNumLib.csproj">
