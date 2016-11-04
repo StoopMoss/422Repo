@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using CS422;
+using System.Numerics;
 
 namespace BigNumTests
 {
@@ -123,6 +124,22 @@ namespace BigNumTests
     }
 
     [Test]
+    public void InitializeWithDecimalThatHasAllTrailingZeros ()
+    {
+      BigNum num = new BigNum ();
+      num.Initialize ("1.00");
+      Assert.IsTrue (num.Mantissa.Equals (1));
+      Assert.AreEqual (0, num.Exponent);
+      Assert.AreEqual (false, num.Sign);
+
+//      BigNum num = new BigNum ();
+//      num.Initialize ("12.00");
+//      Assert.IsTrue (num.Mantissa.Equals (12));
+//      Assert.AreEqual (0, num.Exponent);
+//      Assert.AreEqual (false, num.Sign);
+    }
+
+    [Test]
     public void InitializeWithNegativeDecimalValue ()
     {
       BigNum num = new BigNum ();
@@ -141,6 +158,16 @@ namespace BigNumTests
       Assert.AreEqual (-6, num.Exponent);
       Assert.AreEqual (true, num.Sign);
 
+    }
+
+    [Test]
+    public void InitializeWithValueMuchLessThanOne ()
+    {
+      BigNum num = new BigNum ();
+      num.Initialize (".000000001");
+      Assert.IsTrue (num.Mantissa.Equals (1));
+      Assert.AreEqual (-9, num.Exponent);
+      Assert.AreEqual (false, num.Sign);
     }
 
     [Test]
@@ -177,37 +204,33 @@ namespace BigNumTests
     [Test]
     public void RemoveTralingZeros ()
     {
-      BigNum num = new BigNum ();
-
       string s = "1.10";
-      s = num.RemoveTrailingZeros (s);
+      s = BigNum.RemoveTrailingZeros (s);
       Console.WriteLine ("s: " + s);
       Assert.AreEqual ("1.1", s);
 
       s = "1.100";
-      s = num.RemoveTrailingZeros (s);
+      s = BigNum.RemoveTrailingZeros (s);
       Assert.AreEqual ("1.1", s);
 
       s = "1.1010";
-      s = num.RemoveTrailingZeros (s);
+      s = BigNum.RemoveTrailingZeros (s);
       Assert.AreEqual ("1.101", s);
 
       s = "1.10100";
-      s = num.RemoveTrailingZeros (s);
+      s = BigNum.RemoveTrailingZeros (s);
       Assert.AreEqual ("1.101", s);
 
       s = "1.100100";
-      s = num.RemoveTrailingZeros (s);
+      s = BigNum.RemoveTrailingZeros (s);
       Assert.AreEqual ("1.1001", s);
     }
 
     [Test]
     public void RemoveTralingDecimalPoint ()
     {
-      BigNum num = new BigNum ();
-
       string s = "110.";
-      s = num.RemoveTrailingZeros (s);
+      s = BigNum.RemoveTrailingZeros (s);
       Console.WriteLine ("s: " + s);
       Assert.AreEqual ("110", s);
     }
@@ -282,31 +305,562 @@ namespace BigNumTests
       Assert.AreEqual (expected, actual);
     }
 
+    [Test]
+    public void ToStringTestWithValueMuchLessThanOne ()
+    {
+      BigNum num = new BigNum (".000000001");
+      string expected = ".000000001";
+      string actual = num.ToString ();
+
+      Assert.IsFalse (actual.Contains (" "));
+      Assert.IsTrue (actual.Contains ("0"));
+      Assert.IsTrue (actual.Contains ("."));
+      Assert.AreEqual (expected, actual);
+    }
 
 
-    
+    [Test]
+    public void ToStringTestWithManyDigitValue ()
+    {
+      BigNum num = new BigNum ("12345.12345");
+      string expected = "12345.12345";
+      string actual = num.ToString ();
+
+      Assert.IsFalse (actual.Contains (" "));
+      Assert.IsFalse (actual.Contains ("0"));
+      Assert.IsTrue (actual.Contains ("."));
+      Assert.AreEqual (expected, actual);
+    }
+
+    [Test]
+    public void ToStringTestWithNoDecimal ()
+    {
+      BigNum num = new BigNum ("12345");
+      string expected = "12345";
+      string actual = num.ToString ();
+
+      Assert.IsFalse (actual.Contains (" "));
+      Assert.IsFalse (actual.Contains ("0"));
+      Assert.IsFalse (actual.Contains ("."));
+      Assert.AreEqual (expected, actual);
+    }
+
+    [Test]
+    public void ToStringWhenUndefined ()
+    {
+      BigNum num = new BigNum ();
+      num.Undefined = true;
+      string expected = "undefined";
+
+      string actual = num.ToString ();
+
+      Assert.IsFalse (actual.Contains (" "));
+      Assert.IsFalse (actual.Contains ("0"));
+      Assert.IsFalse (actual.Contains ("."));
+      Console.WriteLine ("actual " + actual);
+      Assert.AreEqual (expected, actual);
+    }
+
+    [Test]
+    public void ToStringMakeSureNoLeadingZeros ()
+    {
+      BigNum num = new BigNum ("0.4");
+      string expected = ".4";
+
+      string actual = num.ToString ();
+
+      Assert.IsFalse (actual.Contains (" "));
+      Assert.IsFalse (actual.Contains ("0"));
+      Assert.IsTrue (actual.Contains ("."));
+      Assert.AreEqual (expected, actual);
+    }
+
+    [Test]
+    public void ToStringMakeSureNoUnneededTrailingZeros ()
+    {
+      BigNum num = new BigNum ("0.400");
+      string expected = ".4";
+
+      string actual = num.ToString ();
+
+      Assert.IsFalse (actual.Contains (" "));
+      Assert.IsFalse (actual.Contains ("0"));
+      Assert.IsTrue (actual.Contains ("."));
+      Assert.AreEqual (expected, actual);
+    }
+
+    [Test]
+    public void ToStringAllTrailingZerosAfterDecimal ()
+    {
+      BigNum num = new BigNum ("1.00");
+      string expected = "1";
+
+      string actual = num.ToString ();
+
+      Assert.IsFalse (actual.Contains (" "));
+      Assert.IsFalse (actual.Contains ("0"));
+      Assert.IsFalse (actual.Contains ("."));
+      Assert.AreEqual (expected, actual);
+    }
+
+
+    [Test]
+    public void AddTrailingZeros ()
+    {
+      BigInteger num = BigInteger.Parse ("1");
+      BigInteger expected = BigInteger.Parse ("10000");
+
+      BigInteger actual = BigNum.AddTrailingZeros (num, 4);
+
+      Assert.NotNull (actual);
+      Assert.AreEqual (expected, actual);
+    }
+
+    [Test]
+    public void AddTrailingZerosWithNegativeNumber ()
+    {
+      BigInteger num = BigInteger.Parse ("-1");
+      BigInteger expected = BigInteger.Parse ("-10000");
+
+      BigInteger actual = BigNum.AddTrailingZeros (num, 4);
+
+      Assert.NotNull (actual);
+      Assert.AreEqual (expected, actual);
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
+    /// Operator Tests
+    /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////////////
+    /// Plus Operator Tests
+    /////////////////////////////////////////////////////////////////////////
+    [Test]
+    public void PlusOperatorWithEitherParamUndefinedShouldReturnUndefined ()
+    {
+      BigNum num1 = new BigNum ();
+      num1.Undefined = true;
+      BigNum num2 = new BigNum ("2");
+
+      BigNum sum = num1 + num2;
+      Assert.IsTrue (sum.IsUndefined);
+
+      BigNum sum2 = num2 + num1;
+      Assert.IsTrue (sum2.IsUndefined);
+    }
+
+    [Test]
+    public void PlusOperator ()
+    {
+      BigNum num1 = new BigNum ();
+      num1.Undefined = true;
+      BigNum num2 = new BigNum ("2");
+
+      BigNum sum = num1 + num2;
+      Assert.IsTrue (sum.IsUndefined);
+    }
+
+    [Test]
+    public void PlusOperatorTwoNumbersWithDifferentExponents ()
+    {
+      BigNum num1 = new BigNum ("1.1");
+      BigNum num2 = new BigNum ("1.11");
+      BigNum expected = new BigNum (new BigInteger (221), -2);
+
+      BigNum sum = num1 + num2;
+
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void PlusOperatorParamsWithEqualExponents ()
+    {
+      BigNum num1 = new BigNum ("1.1");
+      BigNum num2 = new BigNum ("2.1");
+      BigNum expected = new BigNum (new BigInteger (32), -1);
+
+      BigNum sum = num1 + num2;
+
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void PlusOperatorWithParamsOfEqualPowerResultingInNegativeValue ()
+    {
+      BigNum num1 = new BigNum ("1.1");
+      BigNum num2 = new BigNum ("-2.1");
+      BigNum expected = new BigNum (new BigInteger (-1), 0);
+
+      Console.WriteLine ("expected: " + expected);
+      BigNum sum = num1 + num2;
+
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Console.WriteLine ("hesdfgdfsre");
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void PlusOperatorWithParamsLargerThanLongs ()
+    {
+      BigNum num1 = new BigNum ("9223372036854775808");
+      Console.WriteLine ("Uh yeah");
+      BigNum num2 = new BigNum ("9223372036854775808");
+      BigInteger I = BigInteger.Parse ("18446744073709551616");
+      BigNum expected = new BigNum (I, 0);
+
+      Console.WriteLine ("expected: " + expected);
+      BigNum sum = num1 + num2;
+
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    /// Subtraction Operator Tests
+    /////////////////////////////////////////////////////////////////////////
+     
+    [Test]
+    public void SubtractionWithTwoPositivesResultingInPositive ()
+    {
+      BigNum num1 = new BigNum ("5");
+      BigNum num2 = new BigNum ("2");
+      BigInteger I = BigInteger.Parse ("3");
+      BigNum expected = new BigNum (I, 0);
+
+      BigNum sum = num1 - num2;
+
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void SubtractionWithTwoPositivesResultingInNegative ()
+    {
+      BigNum num1 = new BigNum ("2");
+      BigNum num2 = new BigNum ("4");
+      BigInteger I = BigInteger.Parse ("-2");
+      BigNum expected = new BigNum (I, 0);
+
+      BigNum sum = num1 - num2;
+
+      Console.WriteLine ("hesdf");
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void SubtractionWithTwoPositiveDecimalsResultingInPositive ()
+    {
+      BigNum num1 = new BigNum ("4.2");
+      BigNum num2 = new BigNum ("2.2");
+      BigInteger I = BigInteger.Parse ("2");
+      BigNum expected = new BigNum (I, 0);
+
+      BigNum sum = num1 - num2;
+
+      Console.WriteLine ("hesdf");
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void SubtractionWithTwoPositiveDecimalsResultingInPositiveDecimal ()
+    {
+      BigNum num1 = new BigNum ("4.2");
+      BigNum num2 = new BigNum ("2.1");
+      BigInteger I = BigInteger.Parse ("21");
+      BigNum expected = new BigNum (I, -1);
+
+      BigNum sum = num1 - num2;
+
+      Console.WriteLine ("hesdf");
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
     //    [Test]
-    //    public void ToStringTestWithRegularString ()
+    //    public void SubtractionWithTwoPositiveDecimalsResultingInPositiveDecimal ()
     //    {
-    //      BigNum num = new BigNum ("1.1");
-    //      string expected = "";
-    //      string actual = num.ToString ();
+    //      BigNum num1 = new BigNum ("4.2");
+    //      BigNum num2 = new BigNum ("2.1");
+    //      BigInteger I = BigInteger.Parse ("21");
+    //      BigNum expected = new BigNum (I, -1);
     //
-    //      Assert.IsFalse (actual.Contains (" "));
-    //      Assert.IsFalse (actual.Contains (" "));
+    //      BigNum sum = num1 - num2;
+    //
+    //      Console.WriteLine ("hesdf");
+    //      Assert.NotNull (sum);
+    //      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+    //      Assert.AreEqual (expected.Exponent, sum.Exponent);
+    //      Assert.AreEqual (expected.Sign, sum.Sign);
+    //      Assert.AreEqual (expected.Undefined, sum.Undefined);
     //    }
 
+
+    /////////////////////////////////////////////////////////////////////////
+    /// Multiplication Operator Tests
+    /////////////////////////////////////////////////////////////////////////
+
+    [Test]
+    public void Multiplication ()
+    {
+      BigNum num1 = new BigNum ("4");
+      BigNum num2 = new BigNum ("2");
+      BigInteger I = BigInteger.Parse ("8");
+      BigNum expected = new BigNum (I, 0);
+
+      BigNum sum = num1 * num2;
+
+      Console.WriteLine ("hesdf");
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void MultiplicationTwoPositiveDecimals ()
+    {
+      BigNum num1 = new BigNum ("2.2");
+      BigNum num2 = new BigNum ("2.2");
+      BigInteger I = BigInteger.Parse ("484");
+      BigNum expected = new BigNum (I, -2);
+
+      BigNum sum = num1 * num2;
+
+      Console.WriteLine ("hesdf");
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void MultiplicationOneNegativeNumber ()
+    {
+      BigNum num1 = new BigNum ("2");
+      BigNum num2 = new BigNum ("-2");
+      BigInteger I = BigInteger.Parse ("-4");
+      BigNum expected = new BigNum (I, 0);
+
+      BigNum sum = num1 * num2;
+
+      Console.WriteLine ("hesdf");
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////
+    /// Division Operator Tests
+    /////////////////////////////////////////////////////////////////////////
+    /// 
+    [Test]
+    public void Division ()
+    {
+      BigNum num1 = new BigNum ("4");
+      BigNum num2 = new BigNum ("2");
+      BigInteger I = BigInteger.Parse ("2");
+      BigNum expected = new BigNum (I, 0);
+
+      BigNum sum = num1 / num2;
+
+      Console.WriteLine ("hesdf");
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void DivisionWithResultingInADecimal ()
+    {
+      BigNum num1 = new BigNum ("9");
+      BigNum num2 = new BigNum ("2");
+      BigInteger I = BigInteger.Parse ("45");
+      BigNum expected = new BigNum (I, -1);
+
+      BigNum sum = num1 / num2;
+
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void DivisionWithANegative ()
+    {
+      BigNum num1 = new BigNum ("9");
+      BigNum num2 = new BigNum ("-2");
+      BigInteger I = BigInteger.Parse ("-45");
+      BigNum expected = new BigNum (I, -1);
+
+      BigNum sum = num1 / num2;
+
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void DivisionWithTwoDecimals ()
+    {
+      BigNum num1 = new BigNum ("1.2");
+      BigNum num2 = new BigNum ("1.3");
+      BigInteger I = BigInteger.Parse ("92307692307692307692307692307");
+      BigNum expected = new BigNum (I, -29);
+
+      BigNum sum = num1 / num2;
+
+      Assert.NotNull (sum);
+      Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      Assert.AreEqual (expected.Exponent, sum.Exponent);
+      Assert.AreEqual (expected.Sign, sum.Sign);
+      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    /// > greaterThan Operator Tests
+    /////////////////////////////////////////////////////////////////////////
+
+    [Test]
+    public void GreaterThanWithInts ()
+    {
+      BigNum num1 = new BigNum ("1");
+      BigNum num2 = new BigNum ("2");
+
+      bool result = (num1 > num2);
+      Assert.IsFalse (result);
+
+      result = (num2 > num1);
+      Assert.IsTrue (result);
+    }
+
+    [Test]
+    public void GreaterThanWithDecimals ()
+    {
+      BigNum num1 = new BigNum ("1.2");
+      BigNum num2 = new BigNum ("1.4");
+
+      bool result = (num1 > num2);
+      Assert.IsFalse (result);
+
+      result = (num2 > num1);
+      Assert.IsTrue (result);
+    }
+
+    [Test]
+    public void GreaterThanWithFirstParamNegative ()
+    {
+      BigNum num1 = new BigNum ("-1");
+      BigNum num2 = new BigNum ("1");
+
+      bool result = (num1 > num2);
+      Assert.IsFalse (result);
+    }
+
+    [Test]
+    public void GreaterThanWithSecondParamNegative ()
+    {
+      BigNum num1 = new BigNum ("1");
+      BigNum num2 = new BigNum ("-1");
+
+      bool result = (num1 > num2);
+      Assert.IsTrue (result);
+    }
+
+    [Test]
+    public void GreaterThanWithBothParamsNegative ()
+    {
+      BigNum num1 = new BigNum ("-1");
+      BigNum num2 = new BigNum ("-2");
+
+      bool result = (num1 > num2);
+      Assert.IsTrue (result);
+
+      result = (num2 > num1);
+      Assert.IsFalse (result);
+    }
+
+
+
     //    [Test]
-    //    public void ToStringTestWithNoLeadingZeros ()
+    //    public void GreaterThanWithDifferentPowersButSameMantissas ()
     //    {
-    //      BigNum num = new BigNum ();
-    //      num.Initialize ("001.1");
-    //      string expected = "1.1";
+    //      BigNum num1 = new BigNum ("1.23");
+    //      BigNum num2 = new BigNum ("123");
     //
-    //      string actual = num.ToString ();
+    //      bool result = (num1 > num2);
+    //      Assert.IsFalse (result);
     //
-    //      Assert.AreEqual (expected, actual);
+    //      result = (num2 > num1);
+    //      Assert.IsTrue (result);
     //    }
+     
+
+    /// /////////////////////////////////////////////////////////////////////////
+    /// >= Operator Tests
+    /////////////////////////////////////////////////////////////////////////
+
+
+    /// /////////////////////////////////////////////////////////////////////////
+    /// < Operator Tests
+    /////////////////////////////////////////////////////////////////////////
+
+
+
+    /// /////////////////////////////////////////////////////////////////////////
+    /// <= Operator Tests
+    /////////////////////////////////////////////////////////////////////////
+
+
+
+    /// /////////////////////////////////////////////////////////////////////////
+    /// IsToStringCorrect Tests
+    /////////////////////////////////////////////////////////////////////////
+    ///
+
+
+
 
   }
 }

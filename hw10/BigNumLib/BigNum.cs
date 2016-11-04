@@ -19,6 +19,8 @@ namespace CS422
 
     private bool _undefined;
 
+    public bool IsUndefined { get { return _undefined; } }
+
     //Properties for testing
     public BigInteger Mantissa { get { return _mantissa; } }
 
@@ -26,10 +28,34 @@ namespace CS422
 
     public bool Sign { get { return _sign; } }
 
+    public bool Undefined {
+      get { return _undefined; }
+      set { _undefined = value; } 
+    }
+
     // Constructors
     public BigNum ()
     {
+      _undefined = true;
     }
+
+    //My own constructor for use in operators to create a new bignum
+    public BigNum (BigInteger mantissa, int exponent)
+    {
+      _exponent = exponent;
+      if (mantissa < 0)
+      {
+        _sign = true;
+        _mantissa = BigInteger.Abs (mantissa);
+      }
+      else
+      {
+        _sign = false;
+        _mantissa = mantissa;
+      }
+      _undefined = false;
+    }
+
 
     public BigNum (string number)
     { 
@@ -39,6 +65,7 @@ namespace CS422
         // so initialize the BigNum to an exactly equal value. 
         // There must not be any rounding or truncation...
         Initialize (number);
+        _undefined = false;
       }
       else
       {
@@ -54,17 +81,62 @@ namespace CS422
         // then the BigNum is initialized to an undefined value, 
         // regardless of the value of the useDoubleToString parameter. 
         _undefined = true;
+      }//Case 2
+      else if (useDoubleToString)
+      {
+        string s = value.ToString ();
+        if (IsValidNumberString (s))
+        {
+          Initialize (s);
+          _undefined = false;
+        }
+        else
+        {
+          throw new ArgumentException ("Invalid argument");
+        }
+      }// Case 3
+      else
+      {
+        //0 - 51 are the significant bytes
+//        // convert so we can play with the bits.
+//        Int64 data = BitConverter.DoubleToInt64Bits(value);
+//        int bias =  1023-53;// - 53 to get the matissa to the left of the decimal point
+//        bool negative = (data < 0);
+//        int exponent = (int) ((data >> 52) & 0x7ffL);
+//        long mantissa = data & 0xfffffffffffffL;
+//        if (mantissa == 0) 
+//        {
+//          _mantissa = new BigInteger(0);
+//          _exponent = new BigInteger(0);
+//          return;
+//        }
+//        // according to evig inan in the zero case or bias +1 so just do the +1 here
+//        if (exponent==0)
+//        {
+//          exponent++;
+//        }
+//        // Normal numbers; leave exponent as it is but add extra
+//        // bit to the front of the mantissa
+//        else
+//        {
+//          mantissa = mantissa | (1L<<52);
+//        }
+//        //go through each int depedoindg on the 
+//        exponent-= bias;// get rid of the bias
+//        StringBuilder bits = new StringBuilder();
+//        for(int j = 0; j<53;j++)
+//        {
+//
+//          if ((mantissa & (1L << j)) > 0)
+//          {
+//            bits.Append("1");
+//          }
+//          else
+//          {
+//            bits.Append("0");
+//          }
+//        }
       }
-//      else if (useDoubleToString)
-//      {
-//        if ()
-//        Initialize (value);
-//      }
-
-      //Case 2
-
-
-      //Case
     }
 
 
@@ -77,47 +149,352 @@ namespace CS422
     public override string ToString ()
     {
       StringBuilder builder = new StringBuilder ();
+      StringBuilder zeroBuilder = new StringBuilder ();
 
-      // FIrst check for sign
+      Console.WriteLine ("TOSTRING: ");
+      Console.WriteLine ("Mantissa: " + _mantissa);
+      Console.WriteLine ("Exponent: " + _exponent);
+      Console.WriteLine ("Sign: " + _sign);
+
+      // First check for undefined
+      if (_undefined)
+      {
+        return "undefined";
+      }
+
+      // Then check for sign
       if (_sign)
       {
         builder.Append ("-");
       }
 
-      //get the location of the decimal from the exponent
-      int index = _exponent * -1;
-      Console.WriteLine ("in");
+      //Console.WriteLine ("ToString(): _exponent: " + _exponent.ToString ());
 
-      if (index == 0) // no decimal
+      if (_exponent == 0) // no decimal
       {
         builder.Append (_mantissa.ToString ());
         return builder.ToString ();
       }
-      else if()// Move decimal left if exponent is  negative
-      {}
-      else if ()// Move decimal right if positive
+
+      string temp = _mantissa.ToString ();
+      // Note: because of how I create the BigNum,
+      // The exponent will always be negative.
+
+      // However we must look out for numbers that are much less than one
+      if (Math.Abs (_exponent) > temp.Length)
       {
-        
+        zeroBuilder.Append ('.');
+        //We must add 'diff' many zeros to the front of the mantissa
+        int diff = Math.Abs (temp.Length + _exponent);
+        for (int i = 0; i < diff; i++)
+        {
+          zeroBuilder.Append ('0');
+        }
+        zeroBuilder.Append (temp);
+        return zeroBuilder.ToString ();
       }
+      else
+      {
+        string second = temp.Substring (
+                          (temp.Length + _exponent), Math.Abs (_exponent));
+        Console.WriteLine ("here");
+        string first = temp.Substring (0, (temp.Length + _exponent));
 
-      // append all digits before decimal
-      builder.Append (_mantissa.ToString ().Substring (0, index));
+        //append first part
+        builder.Append (first);
 
-      // Append decimal
-      builder.Append (".");
+        //Append decimal
+        builder.Append (".");
 
-      // append all digits after decimal
-      builder.Append (_mantissa.ToString ()
-        .Substring (index, _mantissa.ToString ().Length - index));
-
-      Console.WriteLine ("index: " + index);
-      Console.WriteLine ("_exponent: " + _exponent);
-      Console.WriteLine ("mantissa: " + _mantissa);
-      Console.WriteLine ("sign: " + _sign);
-
-      return builder.ToString ();
+        // append second part
+        builder.Append (second);
+        return builder.ToString ();
+      }
     }
 
+
+    public static BigNum operator + (BigNum lhs, BigNum rhs)
+    {
+      Console.WriteLine ("Plus(): ");
+      //Check to see if either parameter is undefined
+      if (lhs.IsUndefined || rhs.IsUndefined)
+      {
+        return new BigNum ();
+      }
+
+      //Makesure we have mantissas of the correct sign for operation
+      BigInteger leftMantissa = lhs.Mantissa;
+      BigInteger rightMantissa = rhs.Mantissa;
+
+      if (lhs.Sign)
+      {
+        leftMantissa = leftMantissa * -1;
+      }
+
+      if (rhs.Sign)
+      {
+        rightMantissa = rightMantissa * -1;
+      }
+
+      // Increase power of smaller BigNum exponent to match the larger
+      // Find the difference in powers
+      int diff = Math.Abs (lhs.Exponent - rhs.Exponent);
+      //Console.WriteLine ("diff: " + diff);
+      //Console.WriteLine ("lhs.e: " + lhs.Exponent.ToString () + " rhs.e: " + rhs.Exponent.ToString ());
+
+      int matchingExponent = 0;
+      if (Math.Abs (lhs.Exponent) > Math.Abs (rhs.Exponent))
+      {
+        //Console.WriteLine ("lhs bigger: " + lhs.ToString ());
+        rightMantissa = AddTrailingZeros (rhs.Mantissa, diff);  
+        matchingExponent = lhs.Exponent;
+      }
+      else if (Math.Abs (lhs.Exponent) < Math.Abs (rhs.Exponent))
+      {
+        //Console.WriteLine ("rhs bigger: " + rhs.ToString ());
+        leftMantissa = AddTrailingZeros (lhs.Mantissa, diff);  
+        matchingExponent = rhs.Exponent;
+      }
+      else // they must be equal
+      {
+        //Console.WriteLine ("Exponents equal");
+        matchingExponent = rhs.Exponent;
+      }
+
+      // Add the new mantissa to the unchanged
+      BigInteger resultingMantissa = leftMantissa + rightMantissa;      
+//      Console.WriteLine ("matchingExponent: " + matchingExponent);
+//      Console.WriteLine ("rightMantissa: " + rightMantissa);
+//      Console.WriteLine ("leftMantissa: " + leftMantissa);
+//      Console.WriteLine ("resultingMantissa: " + resultingMantissa.ToString ());
+
+      // Use the numbers obtained from the above to create the new BigNum
+      BigNum temp = new BigNum (resultingMantissa, matchingExponent);
+
+      //Filter off trailing Zeros using the to string method(sloppy i know)
+      string t = temp.ToString ();
+      //Console.WriteLine ("tostringChek!! " + t);
+
+      BigNum returnNum = new BigNum (t);
+      return returnNum;
+    }
+
+    public static BigNum operator - (BigNum lhs, BigNum rhs)
+    {
+      Console.WriteLine ("Minus(): ");
+      //Check to see if either parameter is undefined
+      if (lhs.IsUndefined || rhs.IsUndefined)
+      {
+        return new BigNum ();
+      }
+
+      //Makesure we have mantissas of the correct sign for operation
+      BigInteger leftMantissa = lhs.Mantissa;
+      BigInteger rightMantissa = rhs.Mantissa;
+
+      if (lhs.Sign)
+      {
+        leftMantissa = leftMantissa * -1;
+      }
+
+      if (rhs.Sign)
+      {
+        rightMantissa = rightMantissa * -1;
+      }
+
+      // Increase power of smaller BigNum exponent to match the larger
+      // Find the difference in powers
+      int diff = Math.Abs (lhs.Exponent - rhs.Exponent);
+      Console.WriteLine ("diff: " + diff);
+      Console.WriteLine ("lhs.e: " + lhs.Exponent.ToString () + " rhs.e: " + rhs.Exponent.ToString ());
+
+      int matchingExponent = 0;
+      if (Math.Abs (lhs.Exponent) > Math.Abs (rhs.Exponent))
+      {
+        Console.WriteLine ("lhs bigger: " + lhs.ToString ());
+        rightMantissa = AddTrailingZeros (rhs.Mantissa, diff);  
+        matchingExponent = lhs.Exponent;
+      }
+      else if (Math.Abs (lhs.Exponent) < Math.Abs (rhs.Exponent))
+      {
+        Console.WriteLine ("rhs bigger: " + rhs.ToString ());
+        leftMantissa = AddTrailingZeros (lhs.Mantissa, diff);  
+        matchingExponent = rhs.Exponent;
+      }
+      else // they must be equal
+      {
+        Console.WriteLine ("Exponents equal");
+        matchingExponent = rhs.Exponent;
+      }
+
+      // Add the new mantissa to the unchanged
+      BigInteger resultingMantissa = leftMantissa - rightMantissa;      
+      Console.WriteLine ("matchingExponent: " + matchingExponent);
+      Console.WriteLine ("rightMantissa: " + rightMantissa);
+      Console.WriteLine ("leftMantissa: " + leftMantissa);
+      Console.WriteLine ("resultingMantissa: " + resultingMantissa.ToString ());
+
+      // Use the numbers obtained from the above to create the new BigNum
+      BigNum temp = new BigNum (resultingMantissa, matchingExponent);
+
+      //Filter off trailing Zeros using the to string method(sloppy i know)
+      string t = temp.ToString ();
+      Console.WriteLine ("tostringChek!! " + t);
+
+
+      BigNum returnNum = new BigNum (t);
+      return returnNum;
+    }
+
+
+    public static BigNum operator* (BigNum lhs, BigNum rhs)
+    {
+      Console.WriteLine ("Multiplication(): ");
+      //Check to see if either parameter is undefined
+      if (lhs.IsUndefined || rhs.IsUndefined)
+      {
+        return new BigNum ();
+      }
+
+      //Makesure we have mantissas of the correct sign for operation
+      BigInteger leftMantissa = lhs.Mantissa;
+      BigInteger rightMantissa = rhs.Mantissa;
+
+      if (lhs.Sign)
+      {
+        leftMantissa = leftMantissa * -1;
+      }
+
+      if (rhs.Sign)
+      {
+        rightMantissa = rightMantissa * -1;
+      }
+
+      // Add the new mantissa to the unchanged
+      BigInteger resultingMantissa = leftMantissa * rightMantissa;      
+
+      int totalExponent = lhs.Exponent + rhs.Exponent;
+
+      Console.WriteLine ("totalExponent: " + totalExponent);
+      Console.WriteLine ("rightMantissa: " + rightMantissa);
+      Console.WriteLine ("leftMantissa: " + leftMantissa);
+      Console.WriteLine ("resultingMantissa: " + resultingMantissa.ToString ());
+
+      // Use the numbers obtained from the above to create the new BigNum
+      BigNum temp = new BigNum (resultingMantissa, totalExponent);
+
+      //Filter off trailing Zeros using the to string method(sloppy i know)
+      string t = temp.ToString ();
+      Console.WriteLine ("tostringChek!! " + t);
+
+
+      BigNum returnNum = new BigNum (t);
+      return returnNum;
+
+    }
+
+    public static BigNum operator/ (BigNum lhs, BigNum rhs)
+    {
+      Console.WriteLine ("Division(): ");
+      //Check to see if either parameter is undefined
+      if (lhs.IsUndefined || rhs.IsUndefined)
+      {
+        return new BigNum ();
+      }
+
+      //Makesure we have mantissas of the correct sign for operation
+      BigInteger leftMantissa = lhs.Mantissa;
+      BigInteger rightMantissa = rhs.Mantissa;
+
+      if (lhs.Sign)
+      {
+        leftMantissa = leftMantissa * -1;
+      }
+
+      if (rhs.Sign)
+      {
+        rightMantissa = rightMantissa * -1;
+      }
+
+      //For precision multiply the numerator by desired amount 
+      BigInteger precision = BigInteger.Parse ("100000000000000000000000000000");
+      leftMantissa = leftMantissa * precision;
+      
+      // Perform division
+      BigInteger resultingMantissa = leftMantissa / rightMantissa;      
+
+      // -29 accounts for precision above
+      int totalExponent = (lhs.Exponent - 29) - rhs.Exponent;
+
+      // get rid of any new trailing Zeros from precision step above
+      resultingMantissa = BigInteger.Parse (
+        RemoveTrailingZeros (resultingMantissa.ToString ()));
+
+
+      Console.WriteLine ("totalExponent: " + totalExponent);
+      Console.WriteLine ("rightMantissa: " + rightMantissa);
+      Console.WriteLine ("leftMantissa: " + leftMantissa);
+      Console.WriteLine ("resultingMantissa: " + resultingMantissa.ToString ());
+      Console.WriteLine ("resultingMantissa: " + resultingMantissa);
+
+      // Use the numbers obtained from the above to create the new BigNum
+
+      BigNum temp = new BigNum (resultingMantissa, totalExponent);
+      Console.WriteLine ("Quotient " + temp);
+
+      //Filter off trailing Zeros using the to string method(sloppy i know)
+      string t = temp.ToString ();
+      Console.WriteLine ("tostringChek!! " + t);
+
+      BigNum returnNum = new BigNum (t);
+      return returnNum;
+    }
+
+    public static bool operator> (BigNum lhs, BigNum rhs)
+    {
+      //Check to see if either parameter is undefined
+      if (lhs.IsUndefined || rhs.IsUndefined)
+      {
+        throw new ArgumentNullException ();
+      }
+
+      // Eliminate by Signs first
+      if (lhs.Sign && !rhs.Sign)
+      {
+        return false;
+      }
+      else if (!lhs.Sign && rhs.Sign)
+      {
+        return true;
+      }
+      else if (lhs.Sign && rhs.Sign)
+      {
+        //both are negative so the smaller digits are the bigger number
+        // Compare digits left of decimal first
+        //int index = lhs.ToString ().IndexOf (".");
+//        string left = 
+
+      }
+      // otherWise both are positive
+
+      // compare digits left of decimal for both
+      //if equal compare digits right of decimal
+      if (lhs.Mantissa > rhs.Mantissa)
+      {
+        return true;        
+      }
+
+      return false;
+    }
+
+    //    public static bool operator>=(BigNum lhs, BigNum rhs)
+    public static bool operator< (BigNum lhs, BigNum rhs)
+    {
+      return false;
+    }
+    //    public static bool operator>=(BigNum lhs, BigNum rhs)
+    //    public static bool IsToStringCorrect(double value)
+    //
 
     /////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////
@@ -126,9 +503,26 @@ namespace CS422
     /////////////////////////////////////////////////////////
 
 
-    // This is used by the constructor to initialize the members of the class 
+    public static BigInteger AddTrailingZeros (BigInteger num, int numberOfZeros)
+    {
+      StringBuilder b = new StringBuilder ();
+      b.Append (num.ToString ());
+
+      for (int i = 0; i < numberOfZeros; i++)
+      {
+        b.Append ("0");
+      }
+      BigInteger result = BigInteger.Parse (b.ToString ());
+      return result;
+    }
+
+
+    // This is used by the constructor to initialize the members of the class
     public void Initialize (string number)
     {
+      Console.WriteLine ("INITIALIZE: ");
+      //Console.WriteLine ("number: " + number);
+
       // See if there is a sign
       _sign = (number.Contains ("-")) ? true : false;
 
@@ -139,12 +533,23 @@ namespace CS422
       {
         // We need to take care of trailing zeros (Leading zeros 
         // seem to be handled by the parse of the string to BigInteger)
-        //Console.WriteLine ("string before removal: " + str);
+//        Console.WriteLine ("string before removal: " + str);
         str = RemoveTrailingZeros (number);
-        //Console.WriteLine ("string after removal: " + str);
+//        Console.WriteLine ("string after removal: " + str);
         
+        //Console.WriteLine ("decimalIndex " + decimalIndex);
+//        Console.WriteLine ("str.Length " + str.Length);
         //then there is a decimal point so create exponent
-        _exponent = decimalIndex - (str.Length - 1);
+        if (decimalIndex == str.Length)
+        {
+          //only characters cut off the end were zeros so
+          // exponent should be zero
+          _exponent = 0;          
+        }
+        else
+        {
+          _exponent = decimalIndex - (str.Length - 1);
+        }
       }
 
       // Now create the mantissa
@@ -156,14 +561,15 @@ namespace CS422
         b.Append (s);
       }
 
-      //We now have the mantisa in b
+      //We now have the mantissa in b
       string r = b.ToString ();
+      Console.WriteLine ("r: " + r);
 
       _mantissa = new BigInteger ();
       _mantissa = BigInteger.Parse (r);
     }
 
-    public string RemoveTrailingZeros (string str)
+    public static string RemoveTrailingZeros (string str)
     {
       StringBuilder builder = new StringBuilder ();
       StringBuilder final = new StringBuilder ();
@@ -211,6 +617,8 @@ namespace CS422
     {
       int decimalAmount = 0;
       int i = 0;
+
+      //TODO: Ramdom characters will be accepted through current scheme
 
       if (String.IsNullOrEmpty (number) || number.Contains (" "))
       {
