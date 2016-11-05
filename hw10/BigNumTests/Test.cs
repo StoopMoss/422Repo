@@ -56,6 +56,28 @@ namespace BigNumTests
     }
 
     [Test]
+    public void SecondConstructorTest ()
+    {
+      double d = 1.7E+3;
+      //BigInteger integer = new BigInteger (1333333);
+
+      BigNum num = new BigNum (d, false);
+
+      Assert.IsNotNull (num);
+      Console.WriteLine (num.Mantissa);
+      Console.WriteLine (num.Exponent);
+    }
+    //
+    //    [Test]
+    //    public void DoubleToString ()
+    //    {
+    //      //double d = 1 / 3;
+    //      double d = 1.7E+3;
+    //      string test = BigNum.DoubleToString (d);
+    //      Assert.NotNull (test);
+    //    }
+
+    [Test]
     public void IsValidNumberStringWithValidStrings ()
     {
       bool result = false;
@@ -428,6 +450,16 @@ namespace BigNumTests
       Assert.AreEqual (expected, actual);
     }
 
+    //IsStringCorrect Tests
+    //    [Test]
+    //    public void IsToStringCorrect ()
+    //    {
+    //      double value = 4.4D;
+    //      bool result = BigNum.IsToStringCorrect (value);
+    //    }
+
+
+
     /////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
     /// Operator Tests
@@ -758,6 +790,34 @@ namespace BigNumTests
       Assert.AreEqual (expected.Undefined, sum.Undefined);
     }
 
+    [Test]
+    public void DivisionWithTwoMaxs ()
+    {
+      BigNum num1 = new BigNum ("9223372036854775808");
+      BigNum num2 = new BigNum ("9223372036854775809");
+      //BigInteger I = BigInteger.Parse ("");
+      //BigNum expected = new BigNum (I, -29);
+
+      BigNum sum = num1 / num2;
+
+      Assert.NotNull (sum);
+      //Assert.AreEqual (expected.Mantissa, sum.Mantissa);
+      //Assert.AreEqual (expected.Exponent, sum.Exponent);
+      //Assert.AreEqual (expected.Sign, sum.Sign);
+//      Assert.AreEqual (expected.Undefined, sum.Undefined);
+    }
+
+    [Test]
+    public void DivisionWith ()
+    {
+      BigNum num1 = new BigNum ("27");
+      BigNum num2 = new BigNum ("7");
+
+      BigNum sum = num1 / num2;
+
+      Assert.NotNull (sum);
+    }
+
     /////////////////////////////////////////////////////////////////////////
     /// > greaterThan Operator Tests
     /////////////////////////////////////////////////////////////////////////
@@ -786,6 +846,16 @@ namespace BigNumTests
 
       result = (num2 > num1);
       Assert.IsTrue (result);
+    }
+
+    [Test]
+    public void GreaterThanWithEqualPositiveDecimals ()
+    {
+      BigNum num1 = new BigNum ("1.2");
+      BigNum num2 = new BigNum ("1.4");
+
+      bool result = (num1 > num2);
+      Assert.IsFalse (result);
     }
 
     [Test]
@@ -821,21 +891,32 @@ namespace BigNumTests
       Assert.IsFalse (result);
     }
 
+    [Test]
+    public void GreaterThanWithBothParamsNegativeDecimals ()
+    {
+      BigNum num1 = new BigNum ("-1.1");
+      BigNum num2 = new BigNum ("-1.4");
 
+      bool result = (num1 > num2);
+      Assert.IsTrue (result);
 
-    //    [Test]
-    //    public void GreaterThanWithDifferentPowersButSameMantissas ()
-    //    {
-    //      BigNum num1 = new BigNum ("1.23");
-    //      BigNum num2 = new BigNum ("123");
-    //
-    //      bool result = (num1 > num2);
-    //      Assert.IsFalse (result);
-    //
-    //      result = (num2 > num1);
-    //      Assert.IsTrue (result);
-    //    }
-     
+      result = (num2 > num1);
+      Assert.IsFalse (result);
+    }
+
+    [Test]
+    public void GreaterThanWithBothParamsEqual ()
+    {
+      BigNum num1 = new BigNum ("-1.1");
+      BigNum num2 = new BigNum ("-1.1");
+
+      bool result = (num1 > num2);
+      Assert.IsFalse (result);
+
+      result = (num2 > num1);
+      Assert.IsFalse (result);
+    }
+
 
     /// /////////////////////////////////////////////////////////////////////////
     /// >= Operator Tests
@@ -845,13 +926,108 @@ namespace BigNumTests
     /// /////////////////////////////////////////////////////////////////////////
     /// < Operator Tests
     /////////////////////////////////////////////////////////////////////////
+    [Test]
+    public void LessThanWithBothParamsEqual ()
+    {
+      BigNum num1 = new BigNum ("1");
+      BigNum num2 = new BigNum ("1");
 
+      bool result = (num1 < num2);
+      Assert.IsFalse (result);
+      result = (num2 < num1);
+      Assert.IsFalse (result);
+    }
+
+    [Test]
+    public void LessThanWithOneNegativeParam ()
+    {
+      BigNum num1 = new BigNum ("1");
+      BigNum num2 = new BigNum ("-1");
+
+      bool result = (num1 < num2);
+      Assert.IsFalse (result);
+      result = (num2 < num1);
+      Assert.IsTrue (result);
+    }
+
+    [Test]
+    public void LessThanWithBothParamsNegativeAndEqual ()
+    {
+      BigNum num1 = new BigNum ("-1");
+      BigNum num2 = new BigNum ("-1");
+
+      bool result = (num1 < num2);
+      Assert.IsFalse (result);
+      result = (num2 < num1);
+      Assert.IsFalse (result);
+    }
+
+    [Test]
+    public void LessThanWithBothParamsNegative ()
+    {
+      BigNum num1 = new BigNum ("-1");
+      BigNum num2 = new BigNum ("-2");
+
+      bool result = (num1 < num2);
+      Assert.IsFalse (result);
+      result = (num2 < num1);
+      Assert.IsTrue (result);
+    }
+
+    [Test]
+    public void LessThanWithBothParamsDecimal ()
+    {
+      BigNum num1 = new BigNum ("1.1");
+      BigNum num2 = new BigNum ("1.2");
+
+      bool result = (num1 < num2);
+      Assert.IsTrue (result);
+      result = (num2 < num1);
+      Assert.IsFalse (result);
+    }
+
+
+    [Test]
+    public void LessThanWithParamsDecimalOfDifferentPower ()
+    {
+      BigNum num1 = new BigNum ("100.1");
+      BigNum num2 = new BigNum ("1.001");
+
+      bool result = (num1 < num2);
+      Assert.IsFalse (result);
+      result = (num2 < num1);
+      Assert.IsTrue (result);
+    }
+
+    [Test]
+    public void LessThanWithDecimalDeciding ()
+    {
+      BigNum num1 = new BigNum ("100.1");
+      BigNum num2 = new BigNum ("1.001");
+
+      bool result = (num1 < num2);
+      Assert.IsFalse (result);
+      result = (num2 < num1);
+      Assert.IsTrue (result);
+    }
 
 
     /// /////////////////////////////////////////////////////////////////////////
     /// <= Operator Tests
     /////////////////////////////////////////////////////////////////////////
+    [Test]
+    public void LessThanOrEqualTo ()
+    {
+      BigNum num1 = new BigNum ("1");
+      BigNum num2 = new BigNum ("1");
+      BigNum num3 = new BigNum ("2");
 
+      bool result = (num1 <= num2);
+      Assert.IsTrue (result);
+
+      result = (num1 <= num3);
+      Assert.IsTrue (result);
+    }
 
 
     /// /////////////////////////////////////////////////////////////////////////
@@ -859,7 +1035,81 @@ namespace BigNumTests
     /////////////////////////////////////////////////////////////////////////
     ///
 
+    /// /////////////////////////////////////////////////////////////////////////
+    /// GetLeftHandSide Tests
+    /////////////////////////////////////////////////////////////////////////
+    [Test]
+    public void GetLeftHandSideOfNumberWithDecimal ()
+    {
+      BigNum num = new BigNum ("12.34");
+      BigInteger expected = BigInteger.Parse ("12");
 
+      BigInteger actual = BigNum.GetLeftOfDecimal (num);
+
+      Assert.IsNotNull (actual);
+      Assert.AreEqual (expected, actual);
+    }
+
+    [Test]
+    public void GetLeftHandSideOfNumberWithOutDecimal ()
+    {
+      BigNum num = new BigNum ("124");
+      BigInteger expected = BigInteger.Parse ("124");
+
+      BigInteger actual = BigNum.GetLeftOfDecimal (num);
+
+      Assert.IsNotNull (actual);
+      Assert.AreEqual (expected, actual);
+    }
+
+    [Test]
+    public void GetLeftHandSideOfNegativeNumber ()
+    {
+      BigNum num = new BigNum ("-124");
+      BigInteger expected = BigInteger.Parse ("-124");
+
+      BigInteger actual = BigNum.GetLeftOfDecimal (num);
+
+      Assert.IsNotNull (actual);
+      Assert.AreEqual (expected, actual);
+    }
+
+
+    /// /////////////////////////////////////////////////////////////////////////
+    /// GetRightHandSide Tests
+    /////////////////////////////////////////////////////////////////////////
+    [Test]
+    public void GetRightHandSideOfNumberWithDecimal ()
+    {
+      BigNum num = new BigNum ("12.34");
+      BigInteger expected = BigInteger.Parse ("34");
+
+      BigInteger actual = BigNum.GetRightOfDecimal (num);
+
+      Assert.AreEqual (expected, actual);
+    }
+
+    [Test]
+    public void GetRightHandSideOfNumberWithOutDecimal ()
+    {
+      BigNum num = new BigNum ("123");
+      BigInteger expected = BigInteger.Parse ("0");
+
+      BigInteger actual = BigNum.GetRightOfDecimal (num);
+
+      Assert.AreEqual (expected, actual);
+    }
+
+    [Test]
+    public void GetRightHandSideOfNegativeNumberWithDecimal ()
+    {
+      BigNum num = new BigNum ("-12.34");
+      BigInteger expected = BigInteger.Parse ("-34");
+
+      BigInteger actual = BigNum.GetRightOfDecimal (num);
+
+      Assert.AreEqual (expected, actual);
+    }
 
 
   }

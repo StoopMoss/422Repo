@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Numerics;
+using System.ComponentModel;
 
 namespace CS422
 {
@@ -97,45 +98,7 @@ namespace CS422
       }// Case 3
       else
       {
-        //0 - 51 are the significant bytes
-//        // convert so we can play with the bits.
-//        Int64 data = BitConverter.DoubleToInt64Bits(value);
-//        int bias =  1023-53;// - 53 to get the matissa to the left of the decimal point
-//        bool negative = (data < 0);
-//        int exponent = (int) ((data >> 52) & 0x7ffL);
-//        long mantissa = data & 0xfffffffffffffL;
-//        if (mantissa == 0) 
-//        {
-//          _mantissa = new BigInteger(0);
-//          _exponent = new BigInteger(0);
-//          return;
-//        }
-//        // according to evig inan in the zero case or bias +1 so just do the +1 here
-//        if (exponent==0)
-//        {
-//          exponent++;
-//        }
-//        // Normal numbers; leave exponent as it is but add extra
-//        // bit to the front of the mantissa
-//        else
-//        {
-//          mantissa = mantissa | (1L<<52);
-//        }
-//        //go through each int depedoindg on the 
-//        exponent-= bias;// get rid of the bias
-//        StringBuilder bits = new StringBuilder();
-//        for(int j = 0; j<53;j++)
-//        {
-//
-//          if ((mantissa & (1L << j)) > 0)
-//          {
-//            bits.Append("1");
-//          }
-//          else
-//          {
-//            bits.Append("0");
-//          }
-//        }
+        
       }
     }
 
@@ -467,32 +430,171 @@ namespace CS422
       {
         return true;
       }
-      else if (lhs.Sign && rhs.Sign)
+
+      BigInteger lhs_LeftOfDecimal = GetLeftOfDecimal (lhs);
+      BigInteger rhs_LeftOfDecimal = GetLeftOfDecimal (rhs);
+      BigInteger lhs_RightOfDecimal = GetRightOfDecimal (lhs);
+      BigInteger rhs_RightOfDecimal = GetRightOfDecimal (rhs);
+
+      // Compare digits left of decimal first
+      if (lhs_LeftOfDecimal > rhs_LeftOfDecimal)
       {
-        //both are negative so the smaller digits are the bigger number
-        // Compare digits left of decimal first
-        //int index = lhs.ToString ().IndexOf (".");
-//        string left = 
-
+        return true;
       }
-      // otherWise both are positive
-
-      // compare digits left of decimal for both
-      //if equal compare digits right of decimal
-      if (lhs.Mantissa > rhs.Mantissa)
+      else if (lhs_LeftOfDecimal < rhs_LeftOfDecimal)
       {
-        return true;        
+        return false;
       }
-
+      //otherwise they are equal and we must compare right side
+      if (lhs_RightOfDecimal > rhs_RightOfDecimal)
+      {
+        return true;
+      }
+      else if (lhs_RightOfDecimal < rhs_RightOfDecimal)
+      {
+        return false;
+      }
+      //Must be equal
       return false;
     }
 
-    //    public static bool operator>=(BigNum lhs, BigNum rhs)
+
+    public static bool operator<= (BigNum lhs, BigNum rhs)
+    {
+      //Check to see if either parameter is undefined
+      if (lhs.IsUndefined || rhs.IsUndefined)
+      {
+        throw new ArgumentNullException ();
+      }
+
+      // Eliminate by Signs first
+      if (lhs.Sign && !rhs.Sign)
+      {
+        return true;
+      }
+      else if (!lhs.Sign && rhs.Sign)
+      {
+        return false;
+      }
+
+      BigInteger lhs_LeftOfDecimal = GetLeftOfDecimal (lhs);
+      BigInteger rhs_LeftOfDecimal = GetLeftOfDecimal (rhs);
+      BigInteger lhs_RightOfDecimal = GetRightOfDecimal (lhs);
+      BigInteger rhs_RightOfDecimal = GetRightOfDecimal (rhs);
+
+      // Compare digits left of decimal first
+      if (lhs_LeftOfDecimal > rhs_LeftOfDecimal)
+      {
+        return false;
+      }
+      else if (lhs_LeftOfDecimal < rhs_LeftOfDecimal)
+      {
+        return true;
+      }
+      //otherwise they are equal and we must compare right side
+      if (lhs_RightOfDecimal > rhs_RightOfDecimal)
+      {
+        return false;
+      }
+      else if (lhs_RightOfDecimal < rhs_RightOfDecimal)
+      {
+        return true;
+      }
+      //Must be equal
+      return true;
+    }
+
     public static bool operator< (BigNum lhs, BigNum rhs)
     {
+      //Check to see if either parameter is undefined
+      if (lhs.IsUndefined || rhs.IsUndefined)
+      {
+        throw new ArgumentNullException ();
+      }
+
+      // Eliminate by Signs first
+      if (lhs.Sign && !rhs.Sign)
+      {
+        return true;
+      }
+      else if (!lhs.Sign && rhs.Sign)
+      {
+        return false;
+      }
+
+      BigInteger lhs_LeftOfDecimal = GetLeftOfDecimal (lhs);
+      BigInteger rhs_LeftOfDecimal = GetLeftOfDecimal (rhs);
+      BigInteger lhs_RightOfDecimal = GetRightOfDecimal (lhs);
+      BigInteger rhs_RightOfDecimal = GetRightOfDecimal (rhs);
+
+      // Compare digits left of decimal first
+      if (lhs_LeftOfDecimal > rhs_LeftOfDecimal)
+      {
+        return false;
+      }
+      else if (lhs_LeftOfDecimal < rhs_LeftOfDecimal)
+      {
+        return true;
+      }
+      //otherwise they are equal and we must compare right side
+      if (lhs_RightOfDecimal > rhs_RightOfDecimal)
+      {
+        return false;
+      }
+      else if (lhs_RightOfDecimal < rhs_RightOfDecimal)
+      {
+        return true;
+      }
+      //Must be equal
       return false;
     }
-    //    public static bool operator>=(BigNum lhs, BigNum rhs)
+
+    public static bool operator>= (BigNum lhs, BigNum rhs)
+    {
+      //Check to see if either parameter is undefined
+      if (lhs.IsUndefined || rhs.IsUndefined)
+      {
+        throw new ArgumentNullException ();
+      }
+
+      // Eliminate by Signs first
+      if (lhs.Sign && !rhs.Sign)
+      {
+        return false;
+      }
+      else if (!lhs.Sign && rhs.Sign)
+      {
+        return true;
+      }
+
+      BigInteger lhs_LeftOfDecimal = GetLeftOfDecimal (lhs);
+      BigInteger rhs_LeftOfDecimal = GetLeftOfDecimal (rhs);
+      BigInteger lhs_RightOfDecimal = GetRightOfDecimal (lhs);
+      BigInteger rhs_RightOfDecimal = GetRightOfDecimal (rhs);
+
+      // Compare digits left of decimal first
+      if (lhs_LeftOfDecimal > rhs_LeftOfDecimal)
+      {
+        return true;
+      }
+      else if (lhs_LeftOfDecimal < rhs_LeftOfDecimal)
+      {
+        return false;
+      }
+      //otherwise they are equal and we must compare right side
+      if (lhs_RightOfDecimal > rhs_RightOfDecimal)
+      {
+        return true;
+      }
+      else if (lhs_RightOfDecimal < rhs_RightOfDecimal)
+      {
+        return false;
+      }
+      //Must be equal
+      return true;
+    }
+
+
     //    public static bool IsToStringCorrect(double value)
     //
 
@@ -502,6 +604,11 @@ namespace CS422
     /////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////
 
+
+    public static bool IsToStringCorrect (double value)
+    {
+      return false;
+    }
 
     public static BigInteger AddTrailingZeros (BigInteger num, int numberOfZeros)
     {
@@ -648,6 +755,43 @@ namespace CS422
       return true;
     }
 
+
+    public static BigInteger GetLeftOfDecimal (BigNum num)
+    {
+      string temp = num.ToString ();
+
+      if (temp.Contains ("."))
+      {
+        int index = temp.IndexOf (".");
+        temp = temp.Substring (0, index);
+        Console.WriteLine ("temp: " + temp);
+
+        return BigInteger.Parse (temp);      
+      }
+      // the whole number is left of the decimal
+      return BigInteger.Parse (num.ToString ());
+    }
+
+    public static BigInteger GetRightOfDecimal (BigNum num)
+    {
+      string temp = num.ToString ();
+
+      if (temp.Contains ("."))
+      {
+        int index = temp.IndexOf (".");
+        index++; // so as not to include the decimal in the substring
+        temp = temp.Substring (index, temp.Length - index);
+        BigInteger big = BigInteger.Parse (temp);
+        if (num.Sign)
+        {
+          // make return value negative for ease of use later
+          big = big * -1;
+        }
+        return big;            
+      }
+      // there is no right side of decimal
+      return 0;
+    }
 
   }
 }

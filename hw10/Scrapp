@@ -1,0 +1,120 @@
+Console.WriteLine ("In third Case");
+        // Get the bits of the double
+        Int64 bits = BitConverter.DoubleToInt64Bits (value);
+        int bias = 1023 - 53;// - 53 to get the matissa to the left of the decimal point
+        //bool negative = (bits < 0);
+        int exponent = (int)((bits >> 52) & 0x7ffL);
+        long mantissa = bits & 0xfffffffffffffL;
+        if (mantissa == 0)
+        {
+          _mantissa = new BigInteger (0);
+          _exponent = 0;
+          return;
+        }
+        //  in case of zero bias +1 
+        if (exponent == 0)
+        {
+          exponent++;
+        }
+        // Normal numbers; leave exponent as it is but add extra
+        // bit to the front of the mantissa
+        else
+        {
+          mantissa = mantissa | (1L << 52);
+        }
+        //go through each int depedoindg on the 
+        exponent -= bias;// get rid of the bias
+        StringBuilder b = new StringBuilder ();
+        for (int j = 0; j < 53; j++)
+        {
+          if ((mantissa & (1L << j)) > 0)
+          {
+            b.Append ("1");
+          }
+          else
+          {
+            b.Append ("0");
+          }
+        }
+        Console.WriteLine ("builder: " + b.ToString ());
+        //Initialize (b.ToString ());
+        
+        
+        
+        
+        
+        
+        
+    //    public static string DoubleToString (double d)
+    //    {
+    //      Console.WriteLine ("DoubleToString");
+    //
+    //      // Translate the double into sign, exponent and mantissa.
+    //      long bits = BitConverter.DoubleToInt64Bits (d);
+    //      // Note that the shift is sign-extended, hence the test against -1 not 1
+    //      bool negative = (bits < 0);
+    //      int exponent = (int)((bits >> 52) & 0x7ffL);
+    //      long mantissa = bits & 0xfffffffffffffL;
+    //      Console.WriteLine ("negative: " + negative);
+    //      Console.WriteLine ("exponent: " + exponent);
+    //      Console.WriteLine ("mantissa: " + mantissa);
+    //
+    //      // Subnormal numbers; exponent is effectively one higher,
+    //      // but there's no extra normalisation bit in the mantissa
+    //      if (exponent == 0)
+    //      {
+    //        exponent++;
+    //      }
+    //          // Normal numbers; leave exponent as it is but add extra
+    //          // bit to the front of the mantissa
+    //      else
+    //      {
+    //        mantissa = mantissa | (1L << 52);
+    //      }
+    //
+    //      // Bias the exponent. It's actually biased by 1023, but we're
+    //      // treating the mantissa as m.0 rather than 0.m, so we need
+    //      // to subtract another 52 from it.
+    //      exponent -= 1075;
+    //
+    //      if (mantissa == 0)
+    //      {
+    //        return "0";
+    //      }
+    //
+    //      Console.WriteLine ("mantissa before Norm: " + mantissa);
+    //      /* Normalize */
+    //      while ((mantissa & 1) == 0)
+    //      {    /*  i.e., Mantissa is even */
+    //        mantissa >>= 1;
+    //        exponent++;
+    //      }
+    //
+    //      Console.WriteLine ("mantissa after norm: " + mantissa);
+    //      Console.WriteLine ("exponent: " + exponent);
+    //
+    //      /// Construct a new decimal expansion with the mantissa
+    //      StringBuilder b = new StringBuilder (mantissa.ToString ());
+    //
+    //
+    //      return "dsfsd";
+    //    }
+
+    //    private BigNum BasePow (string pow)
+    //    {
+    //      if (BigInteger.Parse (pow) < 0)
+    //      {
+    //        BigNum one = new BigNum ("1");
+    //        BigInteger two = BigInteger.Parse ("2");
+    //
+    //        Int32 power = Int32.Parse (pow);
+    //
+    //        string powerResult = BigInteger.Pow (two, power).ToString ();
+    //        BigNum num = new BigNum (powerResult);
+    //
+    //        return (one / num);
+    //      }
+    //      return new BigNum (BigInteger.Pow (BigInteger.Parse ("2"), Int32.Parse (pow)).ToString ());
+    //    }
+
+
